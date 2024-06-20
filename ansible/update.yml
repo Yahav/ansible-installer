@@ -12,7 +12,7 @@
     update_revision: 1
 
   environment:
-    DEBIAN_FRONTEND: noninteractive
+    # DEBIAN_FRONTEND: noninteractive
 
   roles:
     - role: "init"

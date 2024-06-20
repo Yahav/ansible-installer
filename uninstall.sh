@@ -14,7 +14,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "Uninstallation complete. Some components were not removed."
     echo " "
     echo "To automatically remove unnecessary packages, run:"
-    echo "  apt-get autoremove"
+    echo "  yum autoremove"
     echo " "
     echo "To remove MariaDB data, run:"
     echo "  rm -rfv /etc/mysql /var/lib/mysql"

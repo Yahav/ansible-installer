@@ -2,10 +2,8 @@
 - name: Build Icecast
   include_tasks: icecast.yml
 
-- name: Install Liquidsoap (Focal)
+- name: Install Liquidsoap
   include_tasks: liquidsoap.yml
-  when:
-    - ansible_distribution_release == 'focal'
 
 - name: Add Audiowaveform PPA
   apt_repository:
