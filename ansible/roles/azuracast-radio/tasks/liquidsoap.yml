@@ -4,6 +4,10 @@
     path: "{{ app_base }}/.opam"
     state: absent
 
+- name: Remove default pipewire-jack-audio-connection-kit
+  dnf:
+    name: pipewire-jack-audio-connection-kit
+    state: absent
 
 - name: Install Liquidsoap Dependencies
   dnf:

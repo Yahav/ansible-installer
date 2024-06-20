@@ -27,16 +27,17 @@
 #     key: http://rpms.remirepo.net/RPM-GPG-KEY-remi
 #     state: present
 
-- name: install EPEL
-  dnf:
-    name: epel-release
-    state: latest
+# - name: install EPEL
+#   dnf:
+#     name: epel-release
+#     state: latest
 
 
 - name: install Raven Multimedia Repo
   dnf:
     name: https://pkgs.sysadmins.ws/el{{ansible_distribution_major_version}}/base/x86_64/raven-release.el{{ansible_distribution_major_version}}.noarch.rpm
     state: latest
+    disable_gpg_check: True
 
 # - name: install Remi Repo
 #   dnf:

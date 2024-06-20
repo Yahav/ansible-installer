@@ -29,14 +29,15 @@ if [[ $isRhelBased != true ]]; then
   exit 0
 fi
 
-majorVersion=$(rpm -q --queryformat '%{RELEASE}' rpm | grep -o [[:digit:]]*\$)
+majorVersion=$(cat /etc/system-release-cpe | awk -F: '{ print $5 }' | grep -o ^[0-9]*)
 if [[ $majorVersion -lt 8 ]]; then
   echo "RHEL 8+ is required"
   exit 0
 fi
 
+sudo dnf install -y epel-release
 sudo dnf update
-sudo dnf install -y ansible python3-pip python3-mysqlclient
+sudo dnf install -y ansible python3-pip python3-mysqlclient curl
 
 APP_ENV="${APP_ENV:-production}"
 
