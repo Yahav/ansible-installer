@@ -2,7 +2,7 @@
 - name: Install cron-related packages
   apt:
     name:
-      - cron
+      - cronie
       - tmpreaper
 
 - name: Generate Cron Template
@@ -29,8 +29,9 @@
     mode: 0644
 
 - name: Disable Cron service
-  service:
-    name: "cron"
+  systemd_service:
+    name: "crond"
     enabled: false
     state: stopped
   ignore_errors: true
+  when: is_systemd == "True"

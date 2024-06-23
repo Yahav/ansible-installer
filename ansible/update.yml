@@ -33,9 +33,6 @@
     - role: "redis"
       when: update_revision|int < 93
 
-    - role: "beanstalkd"
-      when: update_revision|int < 87
-
     - role: "sftpgo"
       when: update_revision|int < 87
 
@@ -43,9 +40,6 @@
       when: update_revision|int < 87
 
     - role: "composer"
-
-    - role: "influxdb"
-      when: update_revision|int < 58
 
     - role: "ufw"
       when: update_revision|int < 86

@@ -33,19 +33,29 @@
   loop:
     - "{{ www_base }}"
     - "{{ tmp_base }}"
-    - "{{ tmp_base }}/proxies"
     - "{{ app_base }}/stations"
-    - "{{ app_base }}/geoip"
-    - "{{ app_base }}/dbip"
+    - "{{ app_base }}/docs"
     - "{{ app_base }}/backups"
-    - "{{ app_base }}/servers"
-    - "{{ app_base }}/servers/shoutcast2"
-    - "{{ app_base }}/servers/icecast2"
-    - "{{ app_base }}/servers/stereo_tool"
-    - "{{ app_base }}/uploads"
-    - "{{ app_base }}/acme/challenges"
+    - "{{ app_base }}/dbip"
+    - "{{ app_base }}/geoip"
+    - "{{ app_base }}/sftpgo"
+    - "{{ app_base }}/storage"
+    - "{{ app_base }}/storage/uploads"
+    - "{{ app_base }}/storage/shoutcast2"
+    - "{{ app_base }}/storage/stereo_tool"
+    - "{{ app_base }}/storage/geoip"
+    - "{{ app_base }}/storage/sftpgo"
+    - "{{ app_base }}/storage/acme"
+    - "{{ app_base }}/storage/acme/challenges" 
   loop_control:
     loop_var: azuracast_config_sys_directory
+
+- name: Change tmp permissions
+  ansible.builtin.file:
+    path: "{{ tmp_base }}"
+    owner: azuracast
+    group: www-data
+    mode: '0777'
 
 - name: Write environment configuration file
   template:

@@ -1,25 +1,33 @@
 ---
-- name: Install Composer
+- name: Install or Update Composer
   shell: >-
     curl -fsSL https://getcomposer.org/installer
     | php -- --install-dir=/usr/bin --filename=composer
+
+- name: "Check for files in {{ www_base }}"
+  shell: ls -A
   args:
-    warn: false
+    chdir: "{{ www_base }}"
+  register: www_contents
 
 - name: Deploy AzuraCast Repository (Development)
   become: true
   become_user: azuracast
   command: >-
-    composer create-project azuracast/azuracast:dev-main . --no-dev
+    composer create-project -n azuracast/azuracast:dev-main .
   args:
     chdir: "{{ www_base }}"
-  when: app_env == "development"
+  when: 
+    - app_env == "development"
+    - www_contents["stdout_lines"] | length == 0
 
 - name: Deploy AzuraCast Repository (Production)
   become: true
   become_user: azuracast
   command: >-
-    composer create-project azuracast/azuracast:dev-main .
+    composer create-project -n azuracast/azuracast:dev-main . --no-dev
   args:
     chdir: "{{ www_base }}"
-  when: app_env == "production"
+  when: 
+    - app_env == "production"
+    - www_contents["stdout_lines"] | length == 0

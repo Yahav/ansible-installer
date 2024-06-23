@@ -17,6 +17,17 @@
   when:
     - ansible_distribution_version is version('8', '<')
 
+- shell: "ps --no-headers -o comm 1"
+  register: systemd_test_output
+
+- set_fact:
+    is_systemd:  "{{ 'True' if 'systemd' in systemd_test_output.stdout else 'False' }}"
+
+- name: Systemd check result
+  debug:
+    msg: >-
+      is_systemd: {{ is_systemd }}
+
 - name: Import EPEL GPG key.
   rpm_key:
     key: /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}
@@ -38,47 +49,6 @@
     name: https://pkgs.sysadmins.ws/el{{ansible_distribution_major_version}}/base/x86_64/raven-release.el{{ansible_distribution_major_version}}.noarch.rpm
     state: latest
     disable_gpg_check: True
-
-# - name: install Remi Repo
-#   dnf:
-#     name: https://rpms.remirepo.net/enterprise/remi-release-{{ansible_distribution_major_version}}.rpm
-#     state: latest
-
-# - name: Adding Remi repo pgp keys
-#   ansible.builtin.get_url:
-#     url: https://rpms.remirepo.net/enterprise/{{ansible_distribution_major_version}}/RPM-GPG-KEY-remi
-#     dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-remi.el{{ansible_distribution_major_version}}
-    
-# - name: Add remi repo 
-#   yum_repository: 
-#     name: remi
-#     description: Remi repo for Enterprise Linux {{ansible_distribution_major_version}}
-#     mirrorlist: http://cdn.remirepo.net/enterprise/9/remi/$basearch/mirror
-#     enabled: yes
-#     gpgcheck: yes
-#     repo_gpgcheck: yes
-#     gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-remi.el{{ansible_distribution_major_version}}
-
-# - name: Add remi-modular repo
-#   yum_repository:
-#     name: remi-modular
-#     description: Remi's Modular repository for Enterprise Linux {{ansible_distribution_major_version}} - $basearch
-#     mirrorlist: http://cdn.remirepo.net/enterprise/{{ansible_distribution_major_version}}/modular/$basearch/mirror
-#     enabled: yes
-#     gpgcheck: yes
-#     repo_gpgcheck: yes
-#     gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-remi.el9
-
-# - name: Adding remi-safe repo
-#   yum_repository:
-#     name: remi-safe 
-#     description: remi safe repository for Enterprise Linux {{ansible_distribution_major_version}} - $basearch
-#     mirrorlist: http://cdn.remirepo.net/enterprise/{{ansible_distribution_major_version}}/modular/$basearch/mirror
-#     enabled: yes
-#     gpgcheck: yes
-#     repo_gpgcheck: yes
-#     gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-remi.el{{ansible_distribution_major_version}}
-
 
 - name: Ensure the EPEL repo is enabled
   community.general.dnf_config_manager:

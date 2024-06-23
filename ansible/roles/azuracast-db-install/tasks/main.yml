@@ -8,15 +8,12 @@
   set_fact:
     mysql_user_password: "{{ prod_mysql_user_password.stdout if app_env == 'production' else dev_mysql_user_password }}"
 
-- name: Add configuration
-  template: src=my.cnf.j2 dest=/etc/mysql/conf.d/my.cnf owner=root group=root mode=0644
-
 - name: Add empty root .my.cnf (if none exists)
   template: src=root_empty_my.cnf.j2 dest=/root/.my.cnf owner=root group=root mode=0600 force=no
 
 - name: MariaDB Cleanup
   command: >-
-    mysql --defaults-extra-file=/root/.my.cnf -ne "{{ azure_db_install_sql_cleanup_query }}"
+    mariadb --defaults-extra-file=/root/.my.cnf -ne "{{ azure_db_install_sql_cleanup_query }}"
   loop:
     - "DELETE FROM mysql.user WHERE User=''"
     - "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1')"
@@ -27,7 +24,7 @@
   changed_when: false
   ignore_errors: true
 
-# MySQL Secure Installation
+
 - name: Set up AzuraCast database user
   mysql_user:
     name: azuracast
@@ -48,7 +45,7 @@
 
 - name: Reload privilege tables
   command: >-
-    mysql --defaults-extra-file=/root/.my.cnf -ne "FLUSH PRIVILEGES"
+    mariadb --defaults-extra-file=/root/.my.cnf -ne "FLUSH PRIVILEGES"
   changed_when: false
 
 # Create Database

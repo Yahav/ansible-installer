@@ -1,7 +1,27 @@
 ---
-- name: Enable and restart Supervisord
-  service:
-    name: "supervisor"
+- name: Enable and restart Supervisord service (Production)
+  systemd_service:
+    name: "supervisord"
     enabled: true
     state: restarted
   ignore_errors: true
+  when: is_systemd == "True"
+
+
+- name: Stop Supervisord Processes (Development)
+  shell: "sudo supervisorctl stop all"
+  ignore_errors: true
+  when: is_systemd != "True"
+
+- name: Stop Supervisord (Development)
+  shell: "sudo killall -KILL supervisord"
+  ignore_errors: true
+  when: is_systemd != "True"
+  
+- name: Start Supervisord (Development)
+  shell: "nohup supervisord -c /etc/supervisord.conf >/dev/null 2>&1 &"
+  when: is_systemd != "True"
+
+- name: Pause for 30 seconds to allow all services to be initialized
+  ansible.builtin.pause:
+    seconds: 30

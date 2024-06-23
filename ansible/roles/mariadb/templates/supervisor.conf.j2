@@ -1,7 +1,11 @@
 [program:mariadb]
-command=/usr/sbin/mariadbd
+command=mariadbd
 user=mysql
 priority=100
 numprocs=1
 autostart=true
-autorestart=unexpected
+autorestart=true
+
+stdout_logfile={{ tmp_base }}/service_mysql.log
+stdout_logfile_maxbytes=5MB
+stdout_logfile_backups=5

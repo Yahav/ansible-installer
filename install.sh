@@ -36,7 +36,7 @@ if [[ $majorVersion -lt 8 ]]; then
 fi
 
 sudo dnf install -y epel-release
-sudo dnf update
+sudo dnf update -y
 sudo dnf install -y ansible python3-pip python3-mysqlclient curl
 
 APP_ENV="${APP_ENV:-production}"
@@ -51,3 +51,4 @@ fi
 echo "Installing AzuraCast (Environment: $APP_ENV)"
 ansible-galaxy collection install community.general
 ansible-playbook ansible/deploy.yml --inventory=ansible/hosts --extra-vars "app_env=$APP_ENV"
+#ansible-playbook ansible/deploy.yml --inventory=ansible/hosts --extra-vars "app_env=$APP_ENV" --tags "TAG"

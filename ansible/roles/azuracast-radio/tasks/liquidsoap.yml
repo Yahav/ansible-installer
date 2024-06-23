@@ -43,16 +43,65 @@
       - jack-audio-connection-kit-devel
       - flac-libs
       - flac-devel
+      - lilv-libs
+      - lilv-devel
       - opus-devel
       - speex-devel
       - libtheora-devel
+      - lame-devel
       - libmad-devel
       - pulseaudio-libs-devel
       - libsamplerate-devel
       - soundtouch-devel
       - srt-devel
+      - vorbis-tools
+      - flac
+      - frei0r-devel
+      - ladspa
+      - ladspa-devel
+      - fftw2 # FOR SWH-LADSPA BUILD
+      - fftw2-devel
 
 
+- name: Download liblo
+  get_url:
+    url: https://downloads.sourceforge.net/project/liblo/liblo/0.32/liblo-0.32.tar.gz
+    dest: "/tmp/liblo-0.32.tar.gz"
+    force: true
+
+- name: Extract Liblo
+  unarchive:
+    src: "/tmp/liblo-0.32.tar.gz"
+    dest: "/tmp/"
+    remote_src: true
+
+- name: Build liblo
+  shell: "cd /tmp/liblo-0.32 && ./configure --prefix=/usr --libdir=/usr/lib64 && make && sudo make install"
+
+
+- name: Download shine
+  get_url:
+    url: https://github.com/toots/shine/releases/download/3.1.1/shine-3.1.1.tar.gz
+    dest: "/tmp/shine-3.1.1.tar.gz"
+    force: true
+
+- name: Extract shine
+  unarchive:
+    src: "/tmp/shine-3.1.1.tar.gz"
+    dest: "/tmp/"
+    remote_src: true
+    mode: "u=rwx,g=rx,o=rx"
+    owner: "azuracast"
+    group: "www-data"
+
+- name: Build shine
+  shell: "cd /tmp/shine-3.1.1 && ./configure --prefix=/usr --libdir=/usr/lib64 && make && sudo make install"
+
+- name: Link shine-conf
+  file:
+    src: /usr/local/lib/pkgconfig/shine.pc
+    dest: /usr/share/pkgconfig/shine.pc
+    state: link
 
 
 - name: Install ocaml
@@ -63,41 +112,57 @@
     - opam install -y -q magic dune pulseaudio ao ogg srt ssl taglib tls-liquidsoap opus taglib lilv mad lame faad speex imagelib theora vorbis gd flac fdkaac cry samplerate soundtouch lo shine ffmpeg ffmpeg-av  ffmpeg-avcodec ffmpeg-avdevice ffmpeg-avfilter ffmpeg-avutil bjack portaudio liquidsoap
 
 
-- name: Install Optional Audio Plugins
-  apt:
-    name: "{{ packages }}"
-    install_recommends: false
-  vars:
-    packages:
-      - frei0r-plugins-dev
-      - ladspa-sdk
-      - multimedia-audio-plugins
-      - swh-plugins
-      - tap-plugins
-      - lsp-plugins-ladspa
+- name: Downloading tap-plugins
+  ansible.builtin.git:
+    repo: 'https://git.hq.sig7.se/tap-plugins.git'
+    dest: /tmp/tap-plugins
 
-- name: Get the DPKG Architecture
-  shell: dpkg --print-architecture
-  register: dpkg_arch
-  ignore_errors: true
+- name: Build tap-plugins
+  shell: "cd /tmp/tap-plugins && make"
 
-- name: Remove Existing Liquidsoap Packages
-  apt:
-    name: "{{ packages }}"
-    state: absent
-  vars:
-    packages:
-      - liquidsoap
-      - liquidsoap-snapshot
-  ignore_errors: true
+- name: copy tap-plugins libs
+  shell: "cd /tmp/tap-plugins && cp *.so /usr/lib64/ladspa && cp tap-plugins.rdf /usr/share/ladspa/rdf/ && cp tap_reverb.rdf /usr/share/ladspa/rdf/"
 
-- name: Install Liquidsoap
-  apt:
-    deb: "https://github.com/savonet/liquidsoap/releases/download/v2.1.3/liquidsoap_2.1.3-ubuntu-{{ ansible_distribution_release }}-1_{{ dpkg_arch.stdout_lines[0] | default('amd64') }}.deb"
 
-- name: Link Liquidsoap binary
-  file:
-    src: "/usr/bin/liquidsoap"
-    dest: /usr/local/bin/liquidsoap
-    state: link
+- name: Download lsp-plugins-ladspa
+  get_url:
+    url: https://github.com/sadko4u/lsp-plugins/releases/download/1.2.16/lsp-plugins-ladspa-1.2.16-Linux-x86_64.tar.gz
+    dest: "/tmp/lsp-plugins-ladspa-1.2.16-Linux-x86_64.tar.gz"
     force: true
+
+- name: Extract lsp-plugins-ladspa
+  unarchive:
+    src: "/tmp/lsp-plugins-ladspa-1.2.16-Linux-x86_64.tar.gz"
+    dest: "/tmp/"
+    remote_src: true
+
+- name: Copy lsp plugins
+  ansible.builtin.copy:
+    src: /tmp/lsp-plugins-ladspa-1.2.16-Linux-x86_64/usr/lib/ladspa/
+    dest: /usr/lib64/ladspa/lsp-plugins-ladspa.so
+
+
+- name: Download swh-plugins-ladspa
+  get_url:
+    url: https://github.com/swh/ladspa/archive/refs/tags/v0.4.17.tar.gz
+    dest: "/tmp/swh-plugins-ladspa.tar.gz"
+    force: true
+
+- name: Extract lsp-plugins-ladspa
+  unarchive:
+    src: "/tmp/swh-plugins-ladspa.tar.gz"
+    dest: "/tmp/"
+    remote_src: true
+
+- name: Build lsp-plugins-ladspa
+  shell: "cd /tmp/ladspa-0.4.17 && autoreconf -i && ./configure --prefix=/usr --libdir=/usr/lib64 && make && sudo make install"
+
+
+#  @TODO: Find a way to port those packages to RHEL
+# - name: Install Optional Audio Plugins
+#   apt:
+#     name: "{{ packages }}"
+#     install_recommends: false
+#   vars:
+#     packages:
+#       - multimedia-audio-plugins

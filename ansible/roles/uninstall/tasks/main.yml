@@ -6,11 +6,10 @@
       {{ ansible_distribution_version }} {{ ansible_architecture }} ({{ app_env }})
 
 - name: "Shut down all services"
-  service:
+  systemd_service:
     name: "{{ uninstall_svc_to_stop }}"
     state: stopped
   loop:
-    - "influxdb"
     - "mysql"
     - "php7.4-fpm"
     - "nginx"
@@ -19,6 +18,7 @@
   loop_control:
     loop_var: uninstall_svc_to_stop
   ignore_errors: true
+  when: is_systemd == "True"
 
 - name: Kill all processes owned by AzuraCast user
   command: pkill -9 -u azuracast
@@ -90,9 +90,6 @@
 
       # Supervisord
       - supervisor
-
-      # InfluxDB
-      - influxdb
 
       # Nginx
       - nginx

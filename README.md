@@ -18,11 +18,11 @@ When evaluating which installation method to use, be aware of the following cons
 
 ### Disadvantages of Ansible
 
-- **Limited Operating System Selection:** This installation method requires using one of our few directly supported OS versions, namely the latest LTS releases of Ubuntu. With Docker, our software is configured inside containerized images, so you can use any Docker-supported host operating system.
+- **Limited Operating System Selection:** This installation method requires using one of our few directly supported OS versions, check the "Supported Operating Systems" section below.
 
-- **"Clean" Installation Required:** The Ansible installation does not "coexist" with other software on an Ubuntu installation, and will often overwrite or conflict with other software. Docker's more "containerized" nature means you have a far lower chance of other software conflicting with AzuraCast.
+- **"Clean" Installation Required:** The Ansible installation does not "coexist" with other software on an RHEL installation, and will often overwrite or conflict with other software. Docker's more "containerized" nature means you have a far lower chance of other software conflicting with AzuraCast.
 
-- **Potential for Software Conflicts:** Because Ansible installs directly onto whatever version of Ubuntu you're running, it can't always take into account the specific configuration of your OS, or any bundled software that your hosting provider includes with it. This increases the likelihood that our installer may conflict with 
+- **Potential for Software Conflicts:** Because Ansible installs directly onto whatever version of RHEL you're running, it can't always take into account the specific configuration of your OS, or any bundled software that your hosting provider includes with it. This increases the likelihood that our installer may conflict with 
 
 - **Longer Update Times:** If you use Docker, you can take advantage of the fact that our automated systems build the images for you, and all you need to do is pull down the latest images when updating. With Ansible, you have to run every updated installation step on your own computer, which can (and often does) take much longer.
 
@@ -30,14 +30,17 @@ When evaluating which installation method to use, be aware of the following cons
 
 Currently, the following operating systems are supported:
 
-- **Ubuntu 22.04 "Jammy" LTS (Recommended)**
-- Ubuntu 20.04 "Focal" LTS
+- **RHEL 9 / Almalinux 9 / Rockylinux 9 (Recommended)**
+- RHEL 8 / Almalinux 8 / Rockylinux 8
 
-Our support for LTS versions of Ubuntu follows the [Ubuntu support lifecycle](https://ubuntu.com/about/release-cycle). Typically, LTS versions are supported for a period of 5 years following their release.
 
 AzuraCast is optimized for speed and performance, and can run on very inexpensive hardware, from the Raspberry Pi 3 to the lowest-level VPSes offered by most providers.
 
 Since AzuraCast installs its own radio tools, databases and web servers, you should always install AzuraCast on a "clean" server instance with no other web or radio software installed previously.
+
+## Help Required
+
+Please check the TODO.md file.
 
 ## Migrating from a Legacy Ansible Installation
 
@@ -46,8 +49,8 @@ If migrating from a legacy Ansible installation, follow the regular installation
 ## Installing
 
 ```bash
-mkdir -p /var/azuracast/ansible
-cd /var/azuracast/ansible
+mkdir -p /user/local/azuracast-ansible
+cd /user/local/azuracast-ansible
 
 git clone https://github.com/azuracast/ansible-installer.git .
 chmod a+x install.sh
@@ -57,7 +60,7 @@ bash install.sh
 ## Updating
 
 ```bash
-cd /var/azuracast/ansible
+cd /user/local/azuracast-ansible
 chmod a+x update.sh
 bash update.sh
 ```

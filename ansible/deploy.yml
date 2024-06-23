@@ -17,25 +17,43 @@
     dev_mysql_user_password: "azuracast"
 
   environment:
-#    DEBIAN_FRONTEND: noninteractive
 
   roles:
-    - init
-    - azuracast-user
-    - azuracast-config
-    - azuracast-radio
-    - supervisord
-    - nginx
-    - php
-    - redis
-    - beanstalkd
-    - sftpgo
-    - mariadb
-    - ufw
-    - dbip
-    - composer
-    - services
-    - azuracast-db-install
-    - azuracast-build
-    - azuracast-setup
-    - azuracast-cron
+    - role: init
+      tags: init
+    - role: azuracast-user
+      tags: azuracast-user
+    - role: azuracast-config
+      tags: azuracast-config
+    - role: azuracast-radio
+      tags: azuracast-radio
+    - role: supervisord
+      tags: supervisord
+    - role: nginx
+      tags: nginx
+    - role: php
+      tags: php
+    - role: redis
+      tags: redis
+    - role: centrifugo
+      tags: centrifugo
+    - role: sftpgo
+      tags: sftpgo
+    - role: mariadb
+      tags: mariadb
+    - role: ufw
+      tags: ufw
+    - role: dbip
+      tags: dbip
+    - role: composer
+      tags: composer
+    - role: services
+      tags: services
+    - role: azuracast-db-install
+      tags: azuracast-db-install
+    - role: azuracast-build
+      tags: azuracast-build
+    - role: azuracast-setup
+      tags: azuracast-setup
+    - role: azuracast-cron
+      tags: azuracast-cron
