@@ -103,14 +103,37 @@
     dest: /usr/share/pkgconfig/shine.pc
     state: link
 
-
-- name: Install ocaml
+- shell: which opam
   become: false
+  register: opam
+
+- debug: msg={{ opam.stdout }}
+  
+- name: Install ocaml and audio packages
+  become: true
+  become_user: azuracast
   shell: "{{item}}"
   with_items:
-    - opam init -a
-    - opam install -y -q magic dune pulseaudio ao ogg srt ssl taglib tls-liquidsoap opus taglib lilv mad lame faad speex imagelib theora vorbis gd flac fdkaac cry samplerate soundtouch lo shine ffmpeg ffmpeg-av  ffmpeg-avcodec ffmpeg-avdevice ffmpeg-avfilter ffmpeg-avutil bjack portaudio liquidsoap
+    - "{{opam.stdout}} init -a"
+    - "{{opam.stdout}} install -y -q magic dune pulseaudio ao ogg srt ssl taglib tls-liquidsoap opus taglib lilv mad lame faad speex imagelib theora vorbis gd flac fdkaac cry samplerate soundtouch lo shine ffmpeg ffmpeg-av  ffmpeg-avcodec ffmpeg-avdevice ffmpeg-avfilter ffmpeg-avutil bjack portaudio ladspa liquidsoap"
 
+- shell: eval `opam config env` && which liquidsoap
+  become: true
+  become_user: azuracast
+  register: liquidsoap
+
+# - name: link liquidsoap to /usr/local/bin folder
+#   become: false
+#   shell: "eval `opam config env` && sudo cp $OPAM_SWITCH_PREFIX/bin/liquidsoap /usr/local/bin/liquidsoap"
+
+# @TODO: find a way to make this work
+- name: Create a symbolic link
+  ansible.builtin.file:
+    src: "{{liquidsoap.stdout}}"
+    dest: /usr/local/bin/liquidsoap
+    state: link
+  become: true
+  become_user: azuracast
 
 - name: Downloading tap-plugins
   ansible.builtin.git:
@@ -126,19 +149,19 @@
 
 - name: Download lsp-plugins-ladspa
   get_url:
-    url: https://github.com/sadko4u/lsp-plugins/releases/download/1.2.16/lsp-plugins-ladspa-1.2.16-Linux-x86_64.tar.gz
-    dest: "/tmp/lsp-plugins-ladspa-1.2.16-Linux-x86_64.tar.gz"
+    url: https://github.com/sadko4u/lsp-plugins/releases/download/1.2.16/lsp-plugins-ladspa-1.2.16-Linux-{{ansible_architecture}}.tar.gz
+    dest: "/tmp/lsp-plugins-ladspa-1.2.16-Linux-{{ansible_architecture}}.tar.gz"
     force: true
 
 - name: Extract lsp-plugins-ladspa
   unarchive:
-    src: "/tmp/lsp-plugins-ladspa-1.2.16-Linux-x86_64.tar.gz"
+    src: "/tmp/lsp-plugins-ladspa-1.2.16-Linux-{{ansible_architecture}}.tar.gz"
     dest: "/tmp/"
     remote_src: true
 
 - name: Copy lsp plugins
   ansible.builtin.copy:
-    src: /tmp/lsp-plugins-ladspa-1.2.16-Linux-x86_64/usr/lib/ladspa/
+    src: /tmp/lsp-plugins-ladspa-1.2.16-Linux-{{ansible_architecture}}/usr/lib/ladspa/
     dest: /usr/lib64/ladspa/lsp-plugins-ladspa.so
 
 

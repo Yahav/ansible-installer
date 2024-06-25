@@ -1,5 +1,5 @@
 [program:centrifugo]
-command=centrifugo -c /etc/centrifugo.toml
+command=centrifugo -c {{ app_base }}/centrifugo/config.toml
 user=azuracast
 priority=700
 numprocs=1

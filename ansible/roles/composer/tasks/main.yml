@@ -4,30 +4,40 @@
     curl -fsSL https://getcomposer.org/installer
     | php -- --install-dir=/usr/bin --filename=composer
 
-- name: "Check for files in {{ www_base }}"
-  shell: ls -A
-  args:
-    chdir: "{{ www_base }}"
-  register: www_contents
 
-- name: Deploy AzuraCast Repository (Development)
+- name: Download Azuracast Release
+  get_url:
+    url: "https://github.com/{{azuracast_repo}}/archive/refs/{{azuracast_ref}}/{{azuracast_ver}}.tar.gz"
+    dest: "/tmp/azuracast-{{azuracast_ver}}.tar.gz"
+    force: true
+
+- name: Extract Azuracast
+  unarchive:
+    src: "/tmp/azuracast-{{azuracast_ver}}.tar.gz"
+    dest: "/tmp"
+    remote_src: true
+    owner: azuracast
+    group: www-data
+
+- name: Move Azuracast files to www
+  shell: "rsync -av /tmp/AzuraCast-{{azuracast_ver}}/ {{ www_base }}/ && rm -rf /tmp/AzuraCast-{{azuracast_ver}}"
+
+- name: Install Deps (Development)
   become: true
   become_user: azuracast
   command: >-
-    composer create-project -n azuracast/azuracast:dev-main .
+    composer install
   args:
     chdir: "{{ www_base }}"
   when: 
     - app_env == "development"
-    - www_contents["stdout_lines"] | length == 0
 
-- name: Deploy AzuraCast Repository (Production)
+- name: Install Deps (Production)
   become: true
   become_user: azuracast
   command: >-
-    composer create-project -n azuracast/azuracast:dev-main . --no-dev
+    composer install --no-dev
   args:
     chdir: "{{ www_base }}"
   when: 
     - app_env == "production"
-    - www_contents["stdout_lines"] | length == 0

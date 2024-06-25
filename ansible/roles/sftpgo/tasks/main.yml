@@ -3,7 +3,7 @@
   ansible.builtin.yum_repository:
     name: sftpgo
     description: SFTPGo Repo
-    baseurl: https://ftp.osuosl.org/pub/sftpgo/yum/x86_64/
+    baseurl: https://ftp.osuosl.org/pub/sftpgo/yum/{{ansible_architecture}}/
     enabled: true
     gpgcheck: no
 

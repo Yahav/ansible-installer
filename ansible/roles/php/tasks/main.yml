@@ -53,6 +53,7 @@
       - "php-gmp"         # BigInteger and PHP-IP
       - "php-maxminddb"   # Maxmind (GeoIP) DB native ext
       - "php-opcache"   # Maxmind (GeoIP) DB native ext
+      - "php-sodium"
 
 
 - name: Configure PHP FPM Pool

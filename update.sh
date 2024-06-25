@@ -49,7 +49,7 @@ echo "Updating AzuraCast (Environment: $APP_ENV, Update revision: $UPDATE_REVISI
 
 if [[ ${APP_ENV} == "production" ]]; then
   if [[ -d ".git" ]]; then
-    git config --global --add safe.directory /var/azuracast/ansible
+    git config --global --add safe.directory $(dirname $0)
     git reset --hard
     git pull
   else

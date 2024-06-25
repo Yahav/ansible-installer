@@ -1,21 +1,22 @@
 ---
-- name: Update MariaDB Dependencies
-  shell: >-
-    curl -sSL https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
-    | bash -s -- --mariadb-server-version="mariadb-11.2"
+# @TODO: uncomment, this was commented for a faster dev
+# - name: Update MariaDB Dependencies
+#   shell: >-
+#     curl -sSL https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
+#     | bash -s -- --mariadb-server-version="mariadb-11.2"
 
 
-- name: Install MariaDB
-  dnf:
-    name: "{{ packages }}"
-    state: present
-  vars:
-    packages:
-      - MariaDB
-      - MariaDB-client
-      - MariaDB-server
-      - MariaDB-backup
-      - tzdata
+# - name: Install MariaDB (MariaDB repo is slow, this will take some time...)
+#   dnf:
+#     name: "{{ packages }}"
+#     state: present
+#   vars:
+#     packages:
+#       - MariaDB
+#       - MariaDB-client
+#       - MariaDB-server
+#       - MariaDB-backup
+#       - tzdata
 
 
 - name: Install MariaDB DB conf

@@ -34,6 +34,13 @@
     force: true
     mode: 0644
 
+- name: Copy proxy_params.conf
+  template:
+    src: proxy_params.conf.j2
+    dest: /etc/nginx/proxy_params
+    force: true
+    mode: 0644
+
 
 - name: Turn sendfile off on nginx for local development
   replace:
@@ -69,6 +76,18 @@
   args:
     creates: "{{ app_base }}/storage/acme/default.crt"
 
+- name: Change key file ownership
+  ansible.builtin.file:
+    path: "{{ app_base }}/storage/acme/default.key"
+    owner: azuracast
+    group: azuracast
+
+- name: Change crt file ownership
+  ansible.builtin.file:
+    path: "{{ app_base }}/storage/acme/default.crt"
+    owner: azuracast
+    group: azuracast
+    
 - name: Link self-signed SSL key if applicable.
   file:
     path: "{{ app_base }}/storage/acme/ssl.key"

@@ -1,5 +1,5 @@
 ---
-- name: Enable and restart Supervisord service (Production)
+- name: Enable and restart Supervisord service (Systemd)
   systemd_service:
     name: "supervisord"
     enabled: true
@@ -7,18 +7,17 @@
   ignore_errors: true
   when: is_systemd == "True"
 
-
-- name: Stop Supervisord Processes (Development)
+- name: Stop Supervisord Processes (No Systemd)
   shell: "sudo supervisorctl stop all"
   ignore_errors: true
   when: is_systemd != "True"
 
-- name: Stop Supervisord (Development)
+- name: Stop Supervisord (No Systemd)
   shell: "sudo killall -KILL supervisord"
   ignore_errors: true
   when: is_systemd != "True"
   
-- name: Start Supervisord (Development)
+- name: Start Supervisord (No Systemd)
   shell: "nohup supervisord -c /etc/supervisord.conf >/dev/null 2>&1 &"
   when: is_systemd != "True"
 

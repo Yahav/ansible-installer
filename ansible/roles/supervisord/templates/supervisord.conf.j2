@@ -9,7 +9,7 @@
 ;  - Comments must have a leading space: "a=b ;comment" not "a=b;comment".
 
 [unix_http_server]
-file = /run/supervisor/supervisor.sock
+file = /run/supervisor.sock
 chmod = 0777
 chown=azuracast:azuracast
 
@@ -26,7 +26,7 @@ minprocs=200                 ; (min. avail process descriptors;default 200)
 supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
 
 [supervisorctl]
-serverurl=unix:///run/supervisor/supervisor.sock ; use a unix:// URL  for a unix socket
+serverurl=unix:///run/supervisor.sock ; use a unix:// URL  for a unix socket
 
 
 [include]

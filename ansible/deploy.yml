@@ -8,13 +8,16 @@
     
   vars:
     ansible_base: "{{ playbook_dir | dirname }}"
-    app_base: "/usr/local/azuracast"
+    app_base: "/var/azuracast" # IF YOU CHANGE THAT, BAD THINGS HAPPEN, CHECK TODO.md
     www_base: "{{ app_base }}/www"
     tmp_base: "{{ app_base }}/www_tmp"
     app_env: "production"
     update_mode: false
     dev_azuracast_user_password: "azuracast"
     dev_mysql_user_password: "azuracast"
+    azuracast_repo: "Yahav/AzuraCast" # @TODO: after PR#7232 merged into main Azuracast repo, change to: Azuracast/Azuracast
+    azuracast_ref: "heads/"
+    azuracast_ver: "main"
 
   environment:
 
@@ -47,10 +50,10 @@
       tags: dbip
     - role: composer
       tags: composer
-    - role: services
-      tags: services
     - role: azuracast-db-install
       tags: azuracast-db-install
+    - role: services # @TODO: find a solution for php console scripts running before azuracast tables even exists, this causes the scripts to fail
+      tags: services
     - role: azuracast-build
       tags: azuracast-build
     - role: azuracast-setup

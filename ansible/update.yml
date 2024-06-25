@@ -10,45 +10,49 @@
     app_env: "production"
     update_mode: true
     update_revision: 1
+    azuracast_repo: "Yahav/AzuraCast"  # @TODO: after PR merged into main Azuracast repo, change to: Azuracast/Azuracast
+    azuracast_ref: "heads/"
+    azuracast_ver: "main"
 
   environment:
     # DEBIAN_FRONTEND: noninteractive
 
+ # @TODO: Compare with deploy.yml and add missin roles
   roles:
     - role: "init"
 
     - role: "azuracast-config"
 
     - role: "azuracast-radio"
-      when: update_revision|int < 94
+      when: update_revision|int < 1
 
     - role: "supervisord"
 
     - role: "mariadb"
-      when: update_revision|int < 87
+      when: update_revision|int < 1
 
     - role: "nginx"
-      when: update_revision|int < 90
+      when: update_revision|int < 1
 
     - role: "redis"
-      when: update_revision|int < 93
+      when: update_revision|int < 1
 
     - role: "sftpgo"
-      when: update_revision|int < 87
+      when: update_revision|int < 1
 
     - role: "php"
-      when: update_revision|int < 87
+      when: update_revision|int < 1
 
     - role: "composer"
 
     - role: "ufw"
-      when: update_revision|int < 86
+      when: update_revision|int < 1
 
     - role: "dbip"
-      when: update_revision|int < 51
+      when: update_revision|int < 1
 
     - role: "azuracast-cron"
-      when: update_revision|int < 87
+      when: update_revision|int < 1
 
     - role: "services"
 

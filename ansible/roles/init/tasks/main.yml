@@ -28,6 +28,12 @@
     msg: >-
       is_systemd: {{ is_systemd }}
 
+- name: Put SELinux in permissive mode, logging actions that would be blocked.
+  selinux:
+    policy: targeted
+    state: permissive
+  ignore_errors: true
+
 - name: Import EPEL GPG key.
   rpm_key:
     key: /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}
@@ -46,7 +52,7 @@
 
 - name: install Raven Multimedia Repo
   dnf:
-    name: https://pkgs.sysadmins.ws/el{{ansible_distribution_major_version}}/base/x86_64/raven-release.el{{ansible_distribution_major_version}}.noarch.rpm
+    name: https://pkgs.sysadmins.ws/el{{ansible_distribution_major_version}}/base/{{ansible_architecture}}/raven-release.el{{ansible_distribution_major_version}}.noarch.rpm
     state: latest
     disable_gpg_check: True
 
@@ -96,7 +102,13 @@
       - zstd
       - python3-pip
       - ca-certificates
+      - rsync
 
 - name: Update pip components
   pip:
     name: pip
+
+
+- name: Make sure supervisord jobs are stopped if exists
+  shell: "sudo supervisorctl stop all"
+  ignore_errors: true

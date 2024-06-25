@@ -6,7 +6,7 @@
 - name: Copy Centrifugo config
   template:
     src: config.toml.j2
-    dest: /etc/centrifugo.toml
+    dest: "{{ app_base }}/centrifugo/config.toml"
     force: true
     backup: true
     mode: 0644

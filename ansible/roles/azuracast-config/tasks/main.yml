@@ -9,8 +9,8 @@
 
 - name: Copy existing INI file if it exists
   copy:
-    src: "{{ www_base }}/env.ini"
-    dest: "{{ app_base }}/env.ini"
+    src: "{{ www_base }}/azuracast.env"
+    dest: "{{ app_base }}/azuracast.env"
   ignore_errors: true
 
 - name: Clear temp directory
@@ -34,6 +34,7 @@
     - "{{ www_base }}"
     - "{{ tmp_base }}"
     - "{{ app_base }}/stations"
+    - "{{ app_base }}/centrifugo"
     - "{{ app_base }}/docs"
     - "{{ app_base }}/backups"
     - "{{ app_base }}/dbip"
@@ -59,8 +60,8 @@
 
 - name: Write environment configuration file
   template:
-    src: env.ini.j2
-    dest: "{{ app_base }}/env.ini"
+    src: azuracast.env.j2
+    dest: "{{ app_base }}/azuracast.env"
     owner: azuracast
     group: www-data
     mode: 0644
@@ -68,8 +69,7 @@
 
 - name: Set up environment file
   ini_file:
-    dest: "{{ app_base }}/env.ini"
-    section: "configuration"
-    option: "application_env"
+    dest: "{{ app_base }}/azuracast.env"
+    option: "APPLICATION_ENV"
     value: "{{ app_env }}"
     mode: 0644
