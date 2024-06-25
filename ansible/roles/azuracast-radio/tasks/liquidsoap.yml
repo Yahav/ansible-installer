@@ -100,7 +100,7 @@
 
 - name: Link shine-conf
   file:
-    src: /usr/local/lib/pkgconfig/shine.pc
+    src: /usr/lib64/shine.pc
     dest: /usr/share/pkgconfig/shine.pc
     state: link
 
