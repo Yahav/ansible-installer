@@ -1,8 +1,10 @@
 ---
-- name: Clear OPAM directory
-  file:
-    path: "{{ app_base }}/.opam"
-    state: absent
+
+# @TODO: uncomment after tests
+# - name: Clear OPAM directory
+#   file:
+#     path: "{{ app_base }}/.opam"
+#     state: absent
 
 - name: Remove default pipewire-jack-audio-connection-kit
   dnf:
@@ -117,7 +119,7 @@
     - "{{opam.stdout}} init -a"
     - "{{opam.stdout}} install -y -q magic dune pulseaudio ao ogg srt ssl taglib tls-liquidsoap opus taglib lilv mad lame faad speex imagelib theora vorbis gd flac fdkaac cry samplerate soundtouch lo shine ffmpeg ffmpeg-av  ffmpeg-avcodec ffmpeg-avdevice ffmpeg-avfilter ffmpeg-avutil bjack portaudio ladspa liquidsoap"
 
-- shell: eval `opam config env` && which liquidsoap
+- shell: eval `{{opam.stdout}} config env` && echo $OPAM_SWITCH_PREFIX
   become: true
   become_user: azuracast
   register: liquidsoap
@@ -129,11 +131,10 @@
 # @TODO: find a way to make this work
 - name: Create a symbolic link
   ansible.builtin.file:
-    src: "{{liquidsoap.stdout}}"
+    src: "{{liquidsoap.stdout}}/bin/liquidsoap"
     dest: /usr/local/bin/liquidsoap
     state: link
-  become: true
-  become_user: azuracast
+
 
 - name: Downloading tap-plugins
   ansible.builtin.git:

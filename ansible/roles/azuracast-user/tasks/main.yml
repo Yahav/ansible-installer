@@ -28,7 +28,8 @@
     password: "{{ prod_azuracast_user_password.stdout|password_hash('sha512') if app_env == 'production' else dev_azuracast_user_password|password_hash('sha512') }}"
   notify: send user notification
 
-- name: sudo without password for wheel group
+# @TODO: is this really needed? its quite dangerous!
+- name: sudo without password for azuracast
   copy:
     content: 'azuracast ALL=(ALL:ALL) NOPASSWD:ALL'
     dest: /etc/sudoers.d/azuracast_nopasswd
