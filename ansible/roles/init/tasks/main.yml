@@ -39,10 +39,10 @@
     key: /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}
     state: present
 
-# - name: Import remi GPG key.
-#   rpm_key:
-#     key: http://rpms.remirepo.net/RPM-GPG-KEY-remi
-#     state: present
+- name: Import remi GPG key.
+  rpm_key:
+    key: https://rpms.remirepo.net/enterprise/{{ ansible_distribution_major_version }}/RPM-GPG-KEY-remi
+    state: present
 
 # - name: install EPEL
 #   dnf:
@@ -61,6 +61,11 @@
     name:
       - epel
     state: enabled
+
+- name: install Remi PHP Repo
+  dnf:
+    name: https://rpms.remirepo.net/enterprise/remi-release-{{ ansible_distribution_major_version }}.rpm
+    state: latest
 
 - name: Install Powertools for RHEL 8
   community.general.dnf_config_manager:

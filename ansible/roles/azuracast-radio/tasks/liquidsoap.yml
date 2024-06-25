@@ -110,7 +110,7 @@
 
 - debug: msg={{ opam.stdout }}
   
-- name: Install ocaml and audio packages
+- name: Install ocaml and audio packages (This can take quite a while...)
   become: true
   become_user: azuracast
   shell: "{{item}}"
