@@ -1,10 +1,9 @@
 ---
 
-# @TODO: uncomment after tests
-# - name: Clear OPAM directory
-#   file:
-#     path: "{{ app_base }}/.opam"
-#     state: absent
+- name: Clear OPAM directory
+  file:
+    path: "{{ app_base }}/.opam"
+    state: absent
 
 - name: Remove default pipewire-jack-audio-connection-kit
   dnf:
@@ -124,11 +123,6 @@
   become_user: azuracast
   register: liquidsoap
 
-# - name: link liquidsoap to /usr/local/bin folder
-#   become: false
-#   shell: "eval `opam config env` && sudo cp $OPAM_SWITCH_PREFIX/bin/liquidsoap /usr/local/bin/liquidsoap"
-
-# @TODO: find a way to make this work
 - name: Create a symbolic link
   ansible.builtin.file:
     src: "{{liquidsoap.stdout}}/bin/liquidsoap"
