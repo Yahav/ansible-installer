@@ -67,6 +67,17 @@
     name: https://rpms.remirepo.net/enterprise/remi-release-{{ ansible_distribution_major_version }}.rpm
     state: latest
 
+- name: Ensure the Remi repo is enabled
+  community.general.dnf_config_manager:
+    name: "{{ remi_repo }}"
+    state: enabled
+  loop:
+    - "remi"
+    - "remi-modular"
+    - "remi-safe"
+  loop_control:
+    loop_var: remi_repo
+
 - name: Install Powertools for RHEL 8
   community.general.dnf_config_manager:
     name:
