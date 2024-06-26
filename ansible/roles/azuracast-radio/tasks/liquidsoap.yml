@@ -176,7 +176,7 @@
   shell: "cd /tmp/ladspa-0.4.17 && autoreconf -i && ./configure --prefix=/usr --libdir=/usr/lib64 && make && sudo make install"
 
 
-#  @TODO: Find a way to port those packages to RHEL
+#  @TODO: Find out if and which is required in this meta package and port those packages to RHEL
 # - name: Install Optional Audio Plugins
 #   apt:
 #     name: "{{ packages }}"
