@@ -16,4 +16,4 @@
     enabled: true
     state: stopped
   ignore_errors: true
-  when: is_systemd == "True"
+  when: is_systemd == True

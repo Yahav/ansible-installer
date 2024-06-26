@@ -43,4 +43,4 @@
   with_items:
     - "redis-sentinel"
     - "redis"
-  when: is_systemd == "True"
+  when: is_systemd == True

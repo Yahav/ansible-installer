@@ -34,17 +34,17 @@
     enabled: false
     state: stopped
   ignore_errors: true
-  when: is_systemd == "True"
+  when: is_systemd == True
 
 - name: Stop Supervisord Processes (No Systemd)
   shell: "supervisorctl stop all"
   ignore_errors: true
-  when: is_systemd != "True"
+  when: is_systemd != True
 
 - name: Stop Supervisord (No Systemd)
   shell: "killall -KILL supervisord"
   ignore_errors: true
-  when: is_systemd != "True"
+  when: is_systemd != True
 
 - name: Pause for 10 seconds to allow all services to be stopped
   ansible.builtin.pause:

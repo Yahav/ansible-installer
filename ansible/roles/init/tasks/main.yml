@@ -137,5 +137,5 @@
 
 
 - name: Make sure supervisord jobs are stopped if exists
-  shell: "sudo supervisorctl stop all"
+  shell: "supervisorctl stop all"
   ignore_errors: true
