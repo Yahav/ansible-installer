@@ -52,7 +52,7 @@
       tags: composer
     - role: azuracast-db-install
       tags: azuracast-db-install
-    - role: services # @TODO: find a solution for php console scripts running before azuracast tables even exists, this causes the scripts to fail
+    - role: services
       tags: services
     - role: azuracast-build
       tags: azuracast-build
@@ -60,3 +60,5 @@
       tags: azuracast-setup
     - role: azuracast-cron
       tags: azuracast-cron
+    - role: services # We need this again to start newly added services
+      tags: services

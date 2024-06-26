@@ -22,3 +22,10 @@
   become_user: azuracast
   shell: php {{ www_base }}/backend/bin/console azuracast:setup --update
   when: update_mode|bool
+
+- name: Install PHP Jobs  Supervisord conf
+  template:
+    src: supervisor.conf.j2
+    dest: /etc/supervisord.d/php-jobs.conf
+    force: true
+    mode: 0644
