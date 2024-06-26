@@ -61,6 +61,7 @@ bash install.sh
 
 ```bash
 cd /user/local/azuracast-ansible
+git pull
 chmod a+x update.sh
 bash update.sh
 ```
