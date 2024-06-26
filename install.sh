@@ -54,6 +54,7 @@ sudo dnf install -y ansible python3-pip python3-mysqlclient curl
 
 APP_ENV="${APP_ENV:-production}"
 
+# @TODO: migrate this to the liquidsoap role to support remote deployments
 if ! command -v opam &> /dev/null
 then
     echo "Installing OPAM"
