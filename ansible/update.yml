@@ -14,10 +14,6 @@
     azuracast_ref: "heads/"
     azuracast_ver: "main"
 
-  environment:
-    # DEBIAN_FRONTEND: noninteractive
-
- # @TODO: Compare with deploy.yml and add missin roles
   roles:
     - role: "init"
 
@@ -28,28 +24,31 @@
 
     - role: "supervisord"
 
-    - role: "mariadb"
-      when: update_revision|int < 1
-
     - role: "nginx"
-      when: update_revision|int < 1
-
-    - role: "redis"
-      when: update_revision|int < 1
-
-    - role: "sftpgo"
       when: update_revision|int < 1
 
     - role: "php"
       when: update_revision|int < 1
 
-    - role: "composer"
+    - role: "redis"
+      when: update_revision|int < 1
+
+    - role: centrifugo
+      when: update_revision|int < 1
+
+    - role: "sftpgo"
+      when: update_revision|int < 1
+
+    - role: "mariadb"
+      when: update_revision|int < 1
 
     - role: "ufw"
       when: update_revision|int < 1
 
     - role: "dbip"
       when: update_revision|int < 1
+
+    - role: "composer"
 
     - role: "azuracast-cron"
       when: update_revision|int < 1
@@ -59,3 +58,5 @@
     - role: "azuracast-build"
 
     - role: "azuracast-setup"
+
+    - role: services # We need this again to start newly added services

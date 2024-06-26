@@ -19,8 +19,6 @@
     azuracast_ref: "heads/"
     azuracast_ver: "main"
 
-  environment:
-
   roles:
     - role: init
       tags: init
