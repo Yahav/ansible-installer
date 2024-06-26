@@ -4,6 +4,12 @@ Ansible installation components of AzuraCast.
 
 Ansible installations are no longer officially supported by the core AzuraCast developer team. Community contributions may still be submitted to this repository.
 
+
+### Backwards Compatibility
+
+This Ansible installation/uninstallation is not compatibile with previous version of the Ansible installer. moreover, this installer is for RHEL based systems (Redhat Enterprise Linux, AlmaLinux, RockyLinux etc.)
+
+
 ## Ansible vs. Docker
 
 Many users who are unfamiliar with server-side software are also unfamiliar with Docker, and are thus reluctant to use it. There are also valid reasons to use the Ansible installation in certain circumstances, which is why we continue to maintain it.
