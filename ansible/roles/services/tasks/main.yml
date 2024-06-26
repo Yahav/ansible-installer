@@ -1,4 +1,10 @@
 ---
+
+# @TODO: on a non systemd environments supervisor will not automatically run on startup.
+#        We'll need to create a /etc/rc.d/init.d/supervisord file (chmod +x) that will run it "supervisord -c /etc/supervisord.conf >/dev/null 2>&1 &"
+#        I didn't put time into it since most RHEL instances maybe aside WSL and docker will use systemd.
+
+
 - name: Enable and restart Supervisord service (Systemd)
   systemd_service:
     name: "supervisord"

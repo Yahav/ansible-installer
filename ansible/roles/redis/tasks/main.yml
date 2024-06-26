@@ -27,6 +27,13 @@
     owner: redis
     group: redis
 
+- name: Create tmpfile.d for redis to make sure /run folder created at boot
+  template:
+    src: tmpfiles.conf.j2
+    dest: /usr/lib/tmpfiles.d/redis.conf
+    force: true
+    mode: 0644
+
 - name: Disable Redis services
   systemd_service:
     name: "{{ item }}"

@@ -1,5 +1,6 @@
 [program:redis]
 command=redis-server /etc/redis/redis.conf
+priority=100
 user=redis
 numprocs=1
 autostart=true

@@ -83,13 +83,10 @@
   dnf:
     name: "{{ packages }}"
     state: absent
-    force: true
-    purge: true
   vars:
     packages:
       # Radio software
       - audiowaveform
-      - libxml2
       - libxslt
       - libxml2-devel
       - libxslt-devel
@@ -99,7 +96,6 @@
       - libogg-devel
       - openssl-devel
       - libcurl-devel
-      - pkg-config
 
       # Liquidsoap deps
       - libpng-devel
@@ -116,7 +112,6 @@
       - libtiff-devel
       - libX11-devel
       - libXpm-devel
-      - file-libs
       - file-devel
       - libao
       - libao-devel
@@ -177,7 +172,6 @@
       - MariaDB-client
       - MariaDB-server
       - MariaDB-backup
-      - tzdata
 
       # Redis
       - redis
@@ -186,21 +180,17 @@
       - ufw
 
       # Ansible itself
-      - python3
-      - python
       - python3-pip
-      - python-mysqldb
       - ansible
 
       # System packages
-      - pwgen
       - nodejs
 
 - name: disable repos
   ignore_errors: true
   community.general.dnf_config_manager:
     name: "{{ remi_repo }}"
-    state: enabled
+    state: disabled
   loop:
     - "remi"
     - "remi-modular"

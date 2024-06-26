@@ -56,6 +56,17 @@
     state: latest
     disable_gpg_check: True
 
+- name: Ensure the Raven repo is enabled
+  community.general.dnf_config_manager:
+    name: "{{ raven_repo }}"
+    state: enabled
+  loop:
+    - "raven"
+    - "raven-extras"
+    - "raven-multimedia"
+  loop_control:
+    loop_var: raven_repo
+
 - name: Ensure the EPEL repo is enabled
   community.general.dnf_config_manager:
     name:

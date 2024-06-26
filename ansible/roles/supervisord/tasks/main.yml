@@ -10,12 +10,6 @@
     force: true
     mode: 0644
 
-- name: Create sock directory
-  ansible.builtin.file:
-    path: /run/supervisor
-    state: directory
-    mode: '0755'
-
 - name: Temporarily turn off supervisord
   systemd_service:
     name: "supervisord"
