@@ -1,4 +1,13 @@
 ---
+
+- name: Disable Firewalld service
+  systemd_service:
+    name: "firewalld"
+    enabled: false
+    state: stopped
+  ignore_errors: true
+  when: is_systemd == True
+
 - name: Install UFW Firewall
   dnf:
     name: ufw

@@ -2,6 +2,9 @@
 - hosts: all
   become: true
 
+  collections:
+  - community.general
+
   vars:
     ansible_base: "{{ playbook_dir | dirname }}"
     app_base: "/var/azuracast"
