@@ -7,7 +7,8 @@ Ansible installations are no longer officially supported by the core AzuraCast d
 
 ### Backwards Compatibility
 
-This Ansible installation/uninstallation is not compatibile with previous version of the Ansible installer. moreover, this installer is for RHEL based systems (Redhat Enterprise Linux, AlmaLinux, RockyLinux etc.)
+This Ansible installation/uninstallation is not compatibile with legacy version of the Ansible installer. moreover, this installer is for RHEL based systems (Redhat Enterprise Linux, AlmaLinux, RockyLinux etc.)
+It is a new starting point for future updates and it should be installed on a clean system.
 
 
 ## Ansible vs. Docker
@@ -47,10 +48,6 @@ Since AzuraCast installs its own radio tools, databases and web servers, you sho
 ## Help Required
 
 Please check the TODO.md file.
-
-## Migrating from a Legacy Ansible Installation
-
-If migrating from a legacy Ansible installation, follow the regular installation instructions below and your installation will be replaced by this version.
 
 ## Installing
 
