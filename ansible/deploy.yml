@@ -52,6 +52,8 @@
       tags: azuracast-db-install
     - role: services
       tags: services
+      vars:
+        run: "first"
     - role: azuracast-build
       tags: azuracast-build
     - role: azuracast-setup
@@ -60,3 +62,5 @@
       tags: azuracast-cron
     - role: services # We need this again to start newly added services
       tags: services
+      vars:
+        run: "second"
