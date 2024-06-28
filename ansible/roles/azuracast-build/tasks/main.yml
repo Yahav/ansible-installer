@@ -26,13 +26,33 @@
   args:
     chdir: "{{ www_base }}"
 
-- name: Build AzuraCast Frontend Scripts
+
+- name: Build AzuraCast Frontend Scripts (Production)
   become: true
   become_user: azuracast
   command: >-
     node ./node_modules/vite/bin/vite.js build
   args:
     chdir: "{{ www_base }}"
+  when: 
+    - app_env == "production"
+  
+- name: Remove file (delete file)
+  ansible.builtin.file:
+    path: /etc/supervisord.d/vite.conf
+    state: absent
+  when: 
+    - app_env == "production"
+  ignore_errors: true
+
+- name: Install Vite Supervisor (Development)
+  template:
+    src: vite_supervisor.conf.j2
+    dest: /etc/supervisord.d/vite.conf
+    force: true
+    mode: 0644
+  when: 
+    - app_env == "development"
 
 - name: Set permissions of generated frontend content
   command: >-

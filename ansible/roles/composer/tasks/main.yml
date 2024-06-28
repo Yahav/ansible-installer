@@ -10,6 +10,41 @@
     url: "https://github.com/{{azuracast_repo}}/archive/refs/{{azuracast_ref}}/{{azuracast_ver}}.tar.gz"
     dest: "/tmp/azuracast-{{azuracast_ver}}.tar.gz"
     force: true
+  when: 
+    - app_env == "production"
+
+# - name: Mount an NFS volume
+#   ansible.posix.mount:
+#     src: "{{ azuracast_dev_nfs }}"
+#     path: "{{ www_base }}/"
+#     opts: nfsvers=3,nolock,soft,rw
+#     state: mounted
+#     fstype: nfs
+#   when: 
+#     - app_env == "development"
+
+- name: Copying ssh key for github auth
+  become: true
+  become_user: azuracast
+  ansible.builtin.copy:
+    src: "{{ansible_base}}/.ssh/id_ed25519"
+    dest: ~/.ssh/id_ed25519
+
+- name: Starting SSH Agent and adding key
+  become: true
+  become_user: azuracast
+  ansible.builtin.shell: eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_ed25519
+
+
+- name: Checking out the dev branch
+  become: true
+  become_user: azuracast
+  ansible.builtin.git:
+    repo: git@github.com:{{azuracast_repo}}.git
+    dest: "{{ www_base }}/"
+    version: dev
+    accept_hostkey: yes
+
 
 - name: Extract Azuracast
   unarchive:
@@ -18,9 +53,13 @@
     remote_src: true
     owner: azuracast
     group: www-data
+  when: 
+    - app_env == "production"
 
 - name: Move Azuracast files to www
   shell: "rsync -av /tmp/AzuraCast-{{azuracast_ver}}/ {{ www_base }}/ && rm -rf /tmp/AzuraCast-{{azuracast_ver}}"
+  when: 
+    - app_env == "production"
 
 - name: Install Deps (Development)
   become: true

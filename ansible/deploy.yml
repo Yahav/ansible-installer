@@ -18,6 +18,7 @@
     azuracast_repo: "Yahav/AzuraCast" # @7243: after PR#7232 merged into main Azuracast repo, change to: Azuracast/Azuracast
     azuracast_ref: "heads/"
     azuracast_ver: "main"
+    azuracast_dev_nfs: "172.31.208.1:/azura"
 
   roles:
     - role: init
