@@ -39,6 +39,10 @@ if [[ $majorVersion -lt 8 ]]; then
   exit 0
 fi
 
+
+read -p "For the Development Env to work you'll need to run: eval \"\$(ssh-agent -s)\" && chmod 400 ~/.ssh/id_ed25519 && ssh-add ~/.ssh/id_ed25519" -n1 -s
+
+
 sudo dnf update
 sudo dnf install -y ansible python3-pip python3-mysqlclient
 

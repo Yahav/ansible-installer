@@ -23,17 +23,17 @@
 #   when: 
 #     - app_env == "development"
 
-- name: Copying ssh key for github auth
-  become: true
-  become_user: azuracast
-  ansible.builtin.copy:
-    src: "{{ansible_base}}/.ssh/id_ed25519"
-    dest: ~/.ssh/id_ed25519
+# - name: Copying ssh key for github auth
+#   become: true
+#   become_user: azuracast
+#   ansible.builtin.copy:
+#     src: "{{ansible_base}}/ansible/.ssh/id_ed25519"
+#     dest: ~/.ssh/id_ed25519
 
-- name: Starting SSH Agent and adding key
-  become: true
-  become_user: azuracast
-  ansible.builtin.shell: eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_ed25519
+# - name: Starting SSH Agent and adding key
+#   become: true
+#   become_user: azuracast
+#   ansible.builtin.shell: eval "$(ssh-agent -s)" && chmod 400 ~/.ssh/id_ed25519 && ssh-add ~/.ssh/id_ed25519
 
 
 - name: Checking out the dev branch
