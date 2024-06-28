@@ -59,8 +59,8 @@
     {{ azuracast_build_perm_command }}
   loop:
     - "chown -R azuracast:www-data {{ www_base }}"
-    - "find  {{ www_base }} -type d -exec chmod 755 {} \\;"
-    - "find {{ www_base }} -type f -exec chmod 644 {} \\;"
+    - "find  {{ www_base }} -type d -exec chmod 775 {} \\;"
+    - "find {{ www_base }} -type f -exec chmod 664 {} \\;"
     - "find -L {{ www_base }}/node_modules/.bin -type f -exec chmod +x {} \\;"
   loop_control:
     loop_var: azuracast_build_perm_command
