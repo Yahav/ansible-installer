@@ -13,28 +13,6 @@
   when: 
     - app_env == "production"
 
-# - name: Mount an NFS volume
-#   ansible.posix.mount:
-#     src: "{{ azuracast_dev_nfs }}"
-#     path: "{{ www_base }}/"
-#     opts: nfsvers=3,nolock,soft,rw
-#     state: mounted
-#     fstype: nfs
-#   when: 
-#     - app_env == "development"
-
-# - name: Copying ssh key for github auth
-#   become: true
-#   become_user: azuracast
-#   ansible.builtin.copy:
-#     src: "{{ansible_base}}/ansible/.ssh/id_ed25519"
-#     dest: ~/.ssh/id_ed25519
-
-# - name: Starting SSH Agent and adding key
-#   become: true
-#   become_user: azuracast
-#   ansible.builtin.shell: eval "$(ssh-agent -s)" && chmod 400 ~/.ssh/id_ed25519 && ssh-add ~/.ssh/id_ed25519
-
 
 - name: Checking out the dev branch
   become: true
@@ -42,8 +20,10 @@
   ansible.builtin.git:
     repo: git@github.com:{{azuracast_repo}}.git
     dest: "{{ www_base }}/"
-    version: dev
+    version: "{{ azuracast_dev_ver }}"
     accept_hostkey: yes
+  when: 
+    - app_env == "development"
 
 
 - name: Extract Azuracast
