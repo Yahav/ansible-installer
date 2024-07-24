@@ -46,6 +46,7 @@ sudo dnf install -y ansible python3-pip python3-mysqlclient
 APP_ENV="${APP_ENV:-production}"
 UPDATE_REVISION="${UPDATE_REVISION:-1}"
 
+echo "Updating AzuraCast (Environment: $APP_ENV, Update revision: $UPDATE_REVISION)"
 
 if [[ ${APP_ENV} == "production" ]]; then
   if [[ -d ".git" ]]; then
