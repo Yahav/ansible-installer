@@ -26,21 +26,42 @@
   args:
     chdir: "{{ www_base }}"
 
-- name: Build AzuraCast Frontend Scripts
+
+- name: Build AzuraCast Frontend Scripts (Production)
   become: true
   become_user: azuracast
   command: >-
     node ./node_modules/vite/bin/vite.js build
   args:
     chdir: "{{ www_base }}"
+  when: 
+    - app_env == "production"
+  
+- name: Remove file (delete file)
+  ansible.builtin.file:
+    path: /etc/supervisord.d/vite.conf
+    state: absent
+  when: 
+    - app_env == "production"
+  ignore_errors: true
+
+- name: Install Vite Supervisor (Development)
+  template:
+    src: vite_supervisor.conf.j2
+    dest: /etc/supervisord.d/vite.conf
+    force: true
+    mode: 0644
+  when: 
+    - app_env == "development"
 
 - name: Set permissions of generated frontend content
   command: >-
     {{ azuracast_build_perm_command }}
   loop:
     - "chown -R azuracast:www-data {{ www_base }}"
-    - "find {{ www_base }} -type d -exec chmod 755 {} \\;"
-    - "find {{ www_base }} -type f -exec chmod 644 {} \\;"
+    - "find  {{ www_base }} -type d -exec chmod 775 {} \\;"
+    - "find {{ www_base }} -type f -exec chmod 664 {} \\;"
+    - "find -L {{ www_base }}/node_modules/.bin -type f -exec chmod +x {} \\;"
   loop_control:
     loop_var: azuracast_build_perm_command
   # Note: Don't add warn: false here, it's incompatible with the earlier Ansibles used in 16.04/18.04.

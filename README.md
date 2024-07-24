@@ -68,3 +68,14 @@ git pull
 chmod a+x update.sh
 bash update.sh
 ```
+
+
+## Development
+
+Assuming that you are developing within your own fork/repo and so, set `azuracast_dev_repo` and `azuracast_dev_ver` in deploy.yml
+
+eg.
+```yml
+azuracast_dev_repo: "username/AzuraCast"
+azuracast_dev_ver: "dev-branch-name"
+```

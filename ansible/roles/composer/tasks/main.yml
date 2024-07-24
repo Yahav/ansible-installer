@@ -10,6 +10,21 @@
     url: "https://github.com/{{azuracast_repo}}/archive/refs/{{azuracast_ref}}/{{azuracast_ver}}.tar.gz"
     dest: "/tmp/azuracast-{{azuracast_ver}}.tar.gz"
     force: true
+  when: 
+    - app_env == "production"
+
+
+- name: Checking out the dev branch
+  become: true
+  become_user: azuracast
+  ansible.builtin.git:
+    repo: git@github.com:{{azuracast_dev_repo}}.git
+    dest: "{{ www_base }}/"
+    version: "{{ azuracast_dev_ver }}"
+    accept_hostkey: yes
+  when: 
+    - app_env == "development"
+
 
 - name: Extract Azuracast
   unarchive:
@@ -18,9 +33,13 @@
     remote_src: true
     owner: azuracast
     group: www-data
+  when: 
+    - app_env == "production"
 
 - name: Move Azuracast files to www
   shell: "rsync -av /tmp/AzuraCast-{{azuracast_ver}}/ {{ www_base }}/ && rm -rf /tmp/AzuraCast-{{azuracast_ver}}"
+  when: 
+    - app_env == "production"
 
 - name: Install Deps (Development)
   become: true

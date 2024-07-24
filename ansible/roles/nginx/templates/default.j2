@@ -10,6 +10,14 @@ upstream php-fpm-www {
     server unix:/run/php-fpm-www.sock;
 }
 
+{% if app_env == "development" %}
+upstream vite {
+    server 127.0.0.1:5173;
+}
+{% endif %}
+
+
+
 server {
     listen 127.0.0.1:6010;
 
@@ -144,9 +152,22 @@ server {
         expires 365d;
     }
 
+
+    {% if app_env == "development" %}
+
+    location /static/vite_dist {
+        include proxy_params;
+        proxy_pass http://vite$request_uri;
+    }
+
+    {% else  %}
+
     location /static/vite_dist {
         expires 365d;
     }
+    
+    {% endif %}
+
 
     location /static/icons {
         expires 365d;

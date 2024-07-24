@@ -22,6 +22,8 @@
   file:
     path: "{{ www_base }}"
     state: absent
+  when: 
+    - app_env == "production"
 
 - name: Create System Folders
   file:
