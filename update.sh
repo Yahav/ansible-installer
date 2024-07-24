@@ -40,16 +40,12 @@ if [[ $majorVersion -lt 8 ]]; then
 fi
 
 
-read -p "For the Development Env to work you'll need to run: eval \"\$(ssh-agent -s)\" && chmod 400 ~/.ssh/id_ed25519 && ssh-add ~/.ssh/id_ed25519" -n1 -s
-
-
 sudo dnf update
 sudo dnf install -y ansible python3-pip python3-mysqlclient
 
 APP_ENV="${APP_ENV:-production}"
 UPDATE_REVISION="${UPDATE_REVISION:-1}"
 
-echo "Updating AzuraCast (Environment: $APP_ENV, Update revision: $UPDATE_REVISION)"
 
 if [[ ${APP_ENV} == "production" ]]; then
   if [[ -d ".git" ]]; then

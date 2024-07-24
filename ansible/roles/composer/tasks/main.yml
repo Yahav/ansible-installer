@@ -18,7 +18,7 @@
   become: true
   become_user: azuracast
   ansible.builtin.git:
-    repo: git@github.com:{{azuracast_repo}}.git
+    repo: git@github.com:{{azuracast_dev_repo}}.git
     dest: "{{ www_base }}/"
     version: "{{ azuracast_dev_ver }}"
     accept_hostkey: yes

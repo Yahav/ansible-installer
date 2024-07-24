@@ -131,16 +131,6 @@
       - ca-certificates
       - rsync
 
-- name: Install system packages (Development)
-  dnf:
-    name: "{{ packages }}"
-    state: latest
-  vars:
-    packages:
-      - nfs-utils
-  when: 
-    - app_env == "development"
-
 
 - name: Update pip components
   pip:

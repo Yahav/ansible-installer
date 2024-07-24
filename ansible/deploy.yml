@@ -15,10 +15,11 @@
     update_mode: false
     dev_azuracast_user_password: "azuracast"
     dev_mysql_user_password: "azuracast"
-    azuracast_repo: "Yahav/AzuraCast" # @7243: after PR#7232 merged into main Azuracast repo, change to: Azuracast/Azuracast
-    azuracast_ref: "heads/"
+    azuracast_repo: "Yahav/AzuraCast" # @TODO: after PR#7243 merged into main Azuracast repo, change to: Azuracast/Azuracast
+    azuracast_ref: "heads/" 
     azuracast_ver: "main"
-    azuracast_dev_nfs: "172.31.208.1:/azura"
+    azuracast_dev_repo: "Yahav/AzuraCast" # Your repo name
+    azuracast_dev_ver: "dev" # Our repo development branch
 
   roles:
     - role: init
