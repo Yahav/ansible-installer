@@ -15,11 +15,11 @@
     update_mode: false
     dev_azuracast_user_password: "azuracast"
     dev_mysql_user_password: "azuracast"
-    azuracast_repo: "AzuraCast/AzuraCast"
+    azuracast_repo: "Azuracast/AzuraCast"
     azuracast_ref: "heads/" 
     azuracast_ver: "main"
-    azuracast_dev_repo: "AzuraCast/AzuraCast" # Your repo name
-    azuracast_dev_ver: "dev" # Our repo development branch
+    azuracast_dev_repo: "username/AzuraCast" # Your repo name
+    azuracast_dev_ver: "dev" # Your repo development branch
 
   roles:
     - role: init
