@@ -13,9 +13,11 @@
     app_env: "production"
     update_mode: true
     update_revision: 1
-    azuracast_repo: "Yahav/AzuraCast"  # @TODO: after PR merged into main Azuracast repo, change to: Azuracast/Azuracast
-    azuracast_ref: "heads/"
+    azuracast_repo: "Yahav/AzuraCast" # @TODO: after PR#7243 merged into main Azuracast repo, change to: Azuracast/Azuracast
+    azuracast_ref: "heads/" 
     azuracast_ver: "main"
+    azuracast_dev_repo: "Yahav/AzuraCast" # Your repo name
+    azuracast_dev_ver: "dev" # Our repo development branch
 
   roles:
     - role: "init"

@@ -45,6 +45,7 @@ server {
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         fastcgi_param DOCUMENT_ROOT $realpath_root;
         include fastcgi_params;
+        fastcgi_param IS_INTERNAL true;
 
         fastcgi_read_timeout 600;
         fastcgi_buffering off;
