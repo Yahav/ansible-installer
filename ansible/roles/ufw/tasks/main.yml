@@ -41,6 +41,21 @@
     port: ssh
     proto: tcp
 
+
 - name: UFW - Turn on Firewall
   ufw:
     state: enabled
+  when: app_env == "production"
+
+- name: UFW - Turn on Firewall
+  ufw:
+    state: disabled
+  when: app_env == "development"
+
+- name: Disable Firewalld service
+  systemd_service:
+    name: "firewalld"
+    enabled: false
+    state: stopped
+  ignore_errors: true
+  when: app_env == "development" && is_systemd == True
