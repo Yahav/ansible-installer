@@ -168,11 +168,13 @@
     mode: 0644
     force: true
 
-#  @TODO: Find out if and which is required in this meta package and port those packages to RHEL
-# - name: Install Optional Audio Plugins
-#   apt:
-#     name: "{{ packages }}"
-#     install_recommends: false
-#   vars:
-#     packages:
-#       - multimedia-audio-plugins
+- name: Copy simulcast assets from role files/
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ app_base }}/storage/simulcast/{{ item }}"
+    owner: azuracast
+    group: azuracast
+    mode: '0644'
+  loop:
+    - font.ttf
+    - video.mp3
