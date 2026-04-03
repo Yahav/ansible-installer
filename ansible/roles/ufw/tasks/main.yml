@@ -4,6 +4,7 @@
   command: systemd-detect-virt
   register: virt_detection
   changed_when: false
+  failed_when: false
 
 
 - name: Remove UFW
