@@ -298,6 +298,14 @@
   debug: { var: cfg_flags }
 
 # ---------- Build ----------
+- name: Clean FFmpeg if already configured
+  shell: |
+    if [ -f config.h ] || [ -f ffbuild/config.mak ]; then
+      make distclean
+    fi
+  args:
+    chdir: "{{ ffmpeg_src_dir }}/ffmpeg-{{ ffmpeg_version }}"
+
 - name: Configure FFmpeg
   shell: |
     set -euo pipefail

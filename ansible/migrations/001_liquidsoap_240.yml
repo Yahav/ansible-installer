@@ -1,0 +1,11 @@
+---
+# Migration: Upgrade Liquidsoap to 2.4.0
+# Date: 2025-02-25
+
+- name: Rebuild Liquidsoap 2.4.0
+  ansible.builtin.include_tasks:
+    file: "{{ playbook_dir }}/roles/azuracast-radio/tasks/liquidsoap.yml"
+
+- name: Update AutoCue plugin
+  ansible.builtin.include_tasks:
+    file: "{{ playbook_dir }}/roles/azuracast-radio/tasks/autocue.yml"

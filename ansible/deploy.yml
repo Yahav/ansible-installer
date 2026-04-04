@@ -79,3 +79,18 @@
       tags: services
       vars:
         run: "second"
+
+  post_tasks:
+    - name: Find all migration files
+      ansible.builtin.find:
+        paths: "{{ playbook_dir }}/migrations"
+        patterns: "*.yml"
+      register: deploy_migration_files
+
+    - name: Stamp all migrations as applied
+      ansible.builtin.copy:
+        content: "{{ deploy_migration_files.files | map(attribute='path') | map('basename') | sort | join('\n') }}\n"
+        dest: "{{ app_base }}/.applied_migrations"
+        owner: azuracast
+        group: azuracast
+        mode: "0644"

@@ -1,0 +1,54 @@
+---
+
+- name: Delete migration state file (full update)
+  ansible.builtin.file:
+    path: "{{ app_base }}/.applied_migrations"
+    state: absent
+  when: full_update | default(false) | bool
+
+- name: Ensure migration state file exists
+  ansible.builtin.file:
+    path: "{{ app_base }}/.applied_migrations"
+    state: touch
+    owner: azuracast
+    group: azuracast
+    mode: "0644"
+    modification_time: preserve
+    access_time: preserve
+
+- name: Read applied migrations
+  ansible.builtin.slurp:
+    src: "{{ app_base }}/.applied_migrations"
+  register: applied_migrations_raw
+
+- name: Parse applied migrations
+  ansible.builtin.set_fact:
+    applied_migrations: "{{ (applied_migrations_raw.content | b64decode).split('\n') | select | list }}"
+
+- name: Find all migration files
+  ansible.builtin.find:
+    paths: "{{ migrations_dir }}"
+    patterns: "*.yml"
+  register: migration_files
+
+- name: Build sorted list of migration basenames
+  ansible.builtin.set_fact:
+    all_migrations: "{{ migration_files.files | map(attribute='path') | map('basename') | sort | list }}"
+
+- name: Determine pending migrations
+  ansible.builtin.set_fact:
+    pending_migrations: "{{ all_migrations | difference(applied_migrations) | sort | list }}"
+
+- name: Show migration status
+  ansible.builtin.debug:
+    msg: >-
+      Applied: {{ applied_migrations | length }},
+      Total: {{ all_migrations | length }},
+      Pending: {{ pending_migrations | length }}
+      {% if pending_migrations | length > 0 %} — Will run: {{ pending_migrations | join(', ') }}{% endif %}
+
+- name: Apply pending migrations
+  ansible.builtin.include_tasks: apply_one.yml
+  loop: "{{ pending_migrations }}"
+  loop_control:
+    loop_var: migration_name

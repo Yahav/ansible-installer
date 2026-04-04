@@ -1,0 +1,15 @@
+---
+
+- name: "Migration: {{ migration_name }}"
+  ansible.builtin.debug:
+    msg: "Applying migration {{ migration_name }}"
+
+- name: "Run migration {{ migration_name }}"
+  ansible.builtin.include_tasks:
+    file: "{{ migrations_dir }}/{{ migration_name }}"
+
+- name: "Record migration {{ migration_name }}"
+  ansible.builtin.lineinfile:
+    path: "{{ app_base }}/.applied_migrations"
+    line: "{{ migration_name }}"
+    create: false

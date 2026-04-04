@@ -4,13 +4,41 @@
 
   collections:
   - community.general
-  
+
   pre_tasks:
     - name: Load environment variables from .env file (if it exists)
       ansible.builtin.include_vars:
         file: "{{ playbook_dir | dirname }}/ansible/.env"
         name: env_vars
       ignore_errors: yes
+
+    - name: Running context
+      debug:
+        msg: >-
+          Running Ansible on {{ inventory_hostname }} with OS {{ ansible_distribution }}
+          {{ ansible_distribution_release }} {{ ansible_distribution_version }} {{ ansible_architecture }} ({{ app_env }})"
+
+    - name: RHEL OS Check
+      fail:
+        msg: "The AzuraCast Ansible installation can only be installed onto computers running RHEL based repos."
+      when: ansible_distribution_file_variety != 'RedHat'
+
+    - name: RHEL Version Check
+      fail:
+        msg: "The AzuraCast Ansible installation can only be installed onto computers running RHEL 8+."
+      when:
+        - ansible_distribution_version is version('8', '<')
+
+    - shell: "ps --no-headers -o comm 1"
+      register: systemd_test_output
+
+    - set_fact:
+        is_systemd: "{{ 'True' if 'systemd' in systemd_test_output.stdout else 'False' }}"
+
+    - name: Systemd check result
+      debug:
+        msg: >-
+          is_systemd: {{ is_systemd }}
 
   vars:
     ansible_base: "{{ playbook_dir | dirname }}"
@@ -19,7 +47,8 @@
     tmp_base: "{{ app_base }}/www_tmp"
     app_env: "production"
     update_mode: true
-    update_revision: 5
+    full_update: false
+    migrations_dir: "{{ playbook_dir }}/migrations"
     azuracast_repo: "{{ env_vars.AZURACAST_REPO | default('AzuraCast/AzuraCast') }}"
     azuracast_ref: "{{ env_vars.AZURACAST_REF | default('heads/') }}"
     azuracast_ver: "{{ env_vars.AZURACAST_VER | default('stable') }}"
@@ -27,43 +56,13 @@
     azuracast_dev_ver: "{{ env_vars.AZURACAST_DEV_VER | default('main') }}"
 
   roles:
-    - role: "init"
-
     - role: "azuracast-config"
-
-    - role: "azuracast-radio"
-      when: update_revision|int < 6
 
     - role: "supervisord"
 
-    - role: "nginx"
-      when: update_revision|int < 6
-
-    - role: "php"
-      when: update_revision|int < 6
-
-    - role: "redis"
-      when: update_revision|int < 6
-
-    - role: centrifugo
-      when: update_revision|int < 6
-
-    - role: "sftpgo"
-      when: update_revision|int < 1
-
-    - role: "mariadb"
-      when: update_revision|int < 6
-
-    - role: "ufw"
-      when: update_revision|int < 3
-
-    - role: "dbip"
-      when: update_revision|int < 1
+    - role: "migrate"
 
     - role: "composer"
-
-    - role: "azuracast-cron"
-      when: update_revision|int < 1
 
     - role: "services"
       vars:

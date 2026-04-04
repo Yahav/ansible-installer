@@ -7,7 +7,7 @@ while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do
     ;;
 
   --full)
-    UPDATE_REVISION=0
+    FULL_UPDATE=true
     ;;
   esac
   shift
@@ -43,9 +43,9 @@ sudo dnf update
 sudo dnf install -y ansible python3-pip python3-mysqlclient
 
 APP_ENV="${APP_ENV:-production}"
-UPDATE_REVISION="${UPDATE_REVISION:-2}"
+FULL_UPDATE="${FULL_UPDATE:-false}"
 
-echo "Updating AzuraCast (Environment: $APP_ENV, Update revision: $UPDATE_REVISION)"
+echo "Updating AzuraCast (Environment: $APP_ENV, Full update: $FULL_UPDATE)"
 
 if [[ ${APP_ENV} == "production" ]]; then
   if [[ -d ".git" ]]; then
@@ -59,4 +59,4 @@ fi
 
 ansible-galaxy collection install community.general
 ansible-galaxy collection install ansible.posix
-ansible-playbook ansible/update.yml --inventory=ansible/hosts --extra-vars "app_env=$APP_ENV update_revision=$UPDATE_REVISION"
+ansible-playbook ansible/update.yml --inventory=ansible/hosts --extra-vars "app_env=$APP_ENV full_update=$FULL_UPDATE"
