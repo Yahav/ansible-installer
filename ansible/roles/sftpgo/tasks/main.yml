@@ -48,6 +48,19 @@
     group: www-data
     mode: '0777'
 
+- name: Ensure sftpgo tmp directories exist at boot
+  copy:
+    dest: /etc/tmpfiles.d/sftpgo_azuracast.conf
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      d /tmp/sftpgo_temp 0777 azuracast www-data - -
+
+
+- name: Apply tmpfiles
+  command: systemd-tmpfiles --create
+
 - name: Install SFTPGo Supervisord conf
   template:
     src: supervisor.conf.j2
