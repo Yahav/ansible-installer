@@ -1,7 +1,8 @@
 ---
 
 - name: Install Centrifugo
-  shell: "cd /tmp/ && curl -sSLf https://centrifugal.dev/install.sh | sh && sudo cp /tmp/centrifugo /usr/bin/centrifugo"
+  ansible.builtin.include_tasks:
+    file: "{{ playbook_dir }}/roles/centrifugo/tasks/install.yml"
 
 - name: Copy Centrifugo config
   template:

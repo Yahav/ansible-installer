@@ -22,7 +22,7 @@
 
 - name: Set PHP Version
   set_fact:
-    php_version: 8.4
+    php_version: 8.5
 
 - name: Reset php {{ php_version }} Remi module
   shell: dnf module reset php -y
@@ -52,7 +52,7 @@
       - "php-bcmath"      # BigInteger
       - "php-gmp"         # BigInteger and PHP-IP
       - "php-maxminddb"   # Maxmind (GeoIP) DB native ext
-      - "php-opcache"   
+      # OPcache is compiled into PHP 8.5 (php-common); there is no php-opcache package.
       - "php-sodium"
       - "php-uuid"
 

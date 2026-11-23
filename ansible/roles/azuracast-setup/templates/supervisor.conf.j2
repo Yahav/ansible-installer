@@ -13,8 +13,8 @@ stdout_logfile_backups=5
 redirect_stderr=true
 
 
-[program:php-worker]
-command=php {{ www_base }}/backend/bin/console queue:process --worker-name=app_worker_0
+[program:php-worker-fast]
+command=php {{ www_base }}/backend/bin/console queue:process --fast --worker-name=app_worker_fast
 user=azuracast
 priority=600
 numprocs=1
@@ -22,7 +22,22 @@ autostart=true
 autorestart=true
 stopasgroup=true
 killasgroup=true
-stdout_logfile={{ tmp_base }}/php-worker.log
+stdout_logfile={{ tmp_base }}/php-worker-fast.log
+stdout_logfile_maxbytes=5MB
+stdout_logfile_backups=5
+redirect_stderr=true
+
+
+[program:php-worker-slow]
+command=php {{ www_base }}/backend/bin/console queue:process --no-fast --worker-name=app_worker_slow
+user=azuracast
+priority=600
+numprocs=1
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+stdout_logfile={{ tmp_base }}/php-worker-slow.log
 stdout_logfile_maxbytes=5MB
 stdout_logfile_backups=5
 redirect_stderr=true

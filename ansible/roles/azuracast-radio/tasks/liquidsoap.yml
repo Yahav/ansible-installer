@@ -61,7 +61,7 @@
   shell: "{{item}}"
   with_items:
     - "{{opam.stdout}} init -a"
-    - "{{opam.stdout}} install -y -q magic dune pulseaudio ao ogg srt ssl tsdl-image tsdl-ttf graphics taglib conf-freetype tls-liquidsoap opus taglib lilv mad lame faad speex imagelib theora vorbis gd flac fdkaac cry samplerate soundtouch lo shine conf-ffmpeg ffmpeg ffmpeg-av  ffmpeg-avcodec ffmpeg-avdevice ffmpeg-avfilter ffmpeg-avutil bjack portaudio ladspa sqlite3 liquidsoap.2.4.2"
+    - "{{opam.stdout}} install -y -q magic dune pulseaudio ao ogg srt ssl tsdl-image tsdl-ttf graphics taglib conf-freetype tls-liquidsoap opus taglib lilv mad lame faad speex imagelib theora vorbis gd flac fdkaac cry samplerate soundtouch lo shine conf-ffmpeg ffmpeg.1.2.8 ffmpeg-av.1.2.8  ffmpeg-avcodec.1.2.8 ffmpeg-avdevice.1.2.8 ffmpeg-avfilter.1.2.8 ffmpeg-avutil.1.2.8 bjack portaudio ladspa sqlite3 liquidsoap.2.4.6"
 
 - shell: eval `{{opam.stdout}} config env` && echo $OPAM_SWITCH_PREFIX
   become: true
@@ -120,53 +120,9 @@
 - name: Build lsp-plugins-ladspa
   shell: "cd /tmp/ladspa-0.4.17 && autoreconf -i && ./configure --prefix=/usr --libdir=/usr/lib64 && make && sudo make install"
 
-- name: Create liquidsoap directory if it does not exist
-  ansible.builtin.file:
-    path: "{{app_base}}/liquidsoap"
-    state: directory
-    owner: azuracast
-    group: azuracast
-
-- name: Create liquidsoap directory if it does not exist
-  ansible.builtin.file:
-    path: "{{tmp_base}}/liquidsoap_cache"
-    state: directory
-    owner: azuracast
-    group: azuracast
-
-- name: Create liquidsoap directory if it does not exist
-  ansible.builtin.file:
-    path: "/tmp/liquidsoap_cache"
-    state: directory
-    owner: azuracast
-    group: azuracast
-
-- name: Write AzuraCast common liquidsoap config
-  template:
-    src: azuracast.liq.j2
-    dest: "{{ app_base }}/liquidsoap/azuracast.liq"
-    owner: azuracast
-    group: azuracast
-    mode: 0644
-    force: true
-
-- name: Write AzuraCast common liquidsoap config
-  template:
-    src: crossfade.liq.j2
-    dest: "{{ app_base }}/liquidsoap/crossfade.liq"
-    owner: azuracast
-    group: azuracast
-    mode: 0644
-    force: true
-
-- name: Write AzuraCast common liquidsoap config
-  template:
-    src: utilities.liq.j2
-    dest: "{{ app_base }}/liquidsoap/utilities.liq"
-    owner: azuracast
-    group: azuracast
-    mode: 0644
-    force: true
+- name: Install the shared Liquidsoap library
+  ansible.builtin.include_tasks:
+    file: "{{ playbook_dir }}/roles/azuracast-radio/tasks/liquidsoap_lib.yml"
 
 #  @TODO: Find out if and which is required in this meta package and port those packages to RHEL
 # - name: Install Optional Audio Plugins

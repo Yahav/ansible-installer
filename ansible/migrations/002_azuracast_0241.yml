@@ -1,0 +1,88 @@
+---
+# Migration: component updates for AzuraCast 0.24.1
+# Date: 2026-11-22
+#
+# Runs from update.yml with supervisord (and so nginx, PHP-FPM and all stations) stopped,
+# before the new code is downloaded. Deploy AzuraCast 0.24.1 code in the same update run:
+# 0.24.1 needs everything below, and 0.23.x was not tested against it.
+
+# ---------- nginx: distribution package -> nginx.org mainline, new config ----------
+- name: Reinstall nginx from nginx.org mainline and apply the new configuration
+  ansible.builtin.include_tasks:
+    file: "{{ playbook_dir }}/roles/nginx/tasks/main.yml"
+
+# ---------- PHP 8.4 -> 8.5 ----------
+- name: Reset the PHP module stream
+  shell: dnf module reset php -y
+
+- name: Enable the PHP 8.5 Remi module stream
+  shell: dnf module enable php:remi-8.5 -y
+
+- name: Move all installed PHP packages to 8.5
+  shell: dnf distro-sync -y 'php*'
+
+- name: Check the PHP version
+  command: php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;'
+  register: migration_php_version
+  changed_when: false
+  failed_when: migration_php_version.stdout != "8.5"
+
+- name: Check that the PHP extensions AzuraCast needs are loaded
+  command: php -m
+  register: migration_php_modules
+  changed_when: false
+  failed_when: >-
+    ['curl', 'FFI', 'gd', 'intl', 'maxminddb', 'mbstring', 'pdo_mysql', 'redis', 'sodium', 'xml', 'Zend OPcache']
+    | difference(migration_php_modules.stdout_lines) | length > 0
+
+# ---------- Liquidsoap 2.4.6 + shared library ----------
+- name: Read the installed Liquidsoap version
+  become: true
+  become_user: azuracast
+  command: /usr/local/bin/liquidsoap --version
+  register: migration_liquidsoap_version
+  changed_when: false
+  failed_when: false
+
+# Skipped when 001_liquidsoap_240.yml already rebuilt it in this same run.
+- name: Rebuild Liquidsoap 2.4.6 (this can take quite a while)
+  ansible.builtin.include_tasks:
+    file: "{{ playbook_dir }}/roles/azuracast-radio/tasks/liquidsoap.yml"
+  when: "'Liquidsoap 2.4.6' not in (migration_liquidsoap_version.stdout | default(''))"
+
+# 0.24.1 writes crossfade_smart_* settings into every station config; they are defined here.
+- name: Update the shared Liquidsoap library
+  ansible.builtin.include_tasks:
+    file: "{{ playbook_dir }}/roles/azuracast-radio/tasks/liquidsoap_lib.yml"
+
+# ---------- Basemap for the listener map ----------
+- name: Install the basemap
+  ansible.builtin.include_tasks:
+    file: "{{ playbook_dir }}/roles/basemap/tasks/main.yml"
+
+# ---------- Centrifugo 6.10.3 ----------
+- name: Install the pinned Centrifugo version
+  ansible.builtin.include_tasks:
+    file: "{{ playbook_dir }}/roles/centrifugo/tasks/install.yml"
+
+# ---------- SFTPGo: pinned open-source RPM, defender score_valid ----------
+# Not the whole sftpgo role: it regenerates the SSH host keys.
+- name: Install the pinned SFTPGo package and drop its yum repository
+  ansible.builtin.include_tasks:
+    file: "{{ playbook_dir }}/roles/sftpgo/tasks/install.yml"
+
+- name: Update the SFTPGo configuration
+  template:
+    src: "{{ playbook_dir }}/roles/sftpgo/templates/sftpgo.json.j2"
+    dest: "{{ app_base }}/sftpgo/sftpgo.json"
+    force: true
+    backup: true
+    mode: 0644
+
+# ---------- audiowaveform 1.10.2 ----------
+- name: Update audiowaveform
+  ansible.builtin.include_tasks:
+    file: "{{ playbook_dir }}/roles/azuracast-radio/tasks/audiowaveform.yml"
+
+# The queue worker split (php-worker-fast / php-worker-slow) and Node.js 24 need no steps
+# here: update.yml re-applies both through the azuracast-setup and azuracast-build roles.

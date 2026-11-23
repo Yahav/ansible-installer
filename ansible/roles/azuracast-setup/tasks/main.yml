@@ -37,5 +37,5 @@
   template:
     src: supervisor.conf.j2
     dest: /etc/supervisord.d/php-jobs.conf
-    force: false
+    force: true
     mode: 0644

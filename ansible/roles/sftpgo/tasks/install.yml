@@ -1,0 +1,22 @@
+---
+# Installs the open-source SFTPGo RPM from its GitHub release, pinned.
+# Included by the role and by migrations.
+#
+# No yum repository is used: the old one (ftp.osuosl.org) is gone, and its replacement
+# (download.sftpgo.com) only carries the proprietary SFTPGo Enterprise builds.
+
+- name: Set SFTPGo version
+  set_fact:
+    sftpgo_version: "2.7.1"
+
+- name: Remove the SFTPGo yum repository
+  file:
+    path: /etc/yum.repos.d/sftpgo.repo
+    state: absent
+
+- name: Install SFTPGo {{ sftpgo_version }}
+  dnf:
+    name: "https://github.com/drakkan/sftpgo/releases/download/v{{ sftpgo_version }}/sftpgo-{{ sftpgo_version }}-1.{{ ansible_architecture }}.rpm"
+    state: present
+    disable_gpg_check: true
+    allow_downgrade: true

@@ -47,6 +47,9 @@ server {
         include fastcgi_params;
         fastcgi_param IS_INTERNAL true;
 
+        # Pass the resolved host instead of the raw, client-controlled Host header
+        fastcgi_param HTTP_HOST $host$is_request_port$request_port;
+
         fastcgi_read_timeout 600;
         fastcgi_buffering off;
 
@@ -56,9 +59,12 @@ server {
 
 server {
     listen 80;
-    listen 443 default_server http2 ssl;
+    listen 443 default_server ssl;
     listen [::]:80;
-    listen [::]:443 default_server http2 ssl;
+    listen [::]:443 default_server ssl;
+
+    # Set NGINX_HTTP2: "off" in ansible/.env to disable HTTP/2 on this server.
+    http2 {{ nginx_http2 | default('on') }};
 
     ssl_certificate    {{ app_base }}/storage/acme/ssl.crt;
     ssl_certificate_key    {{ app_base }}/storage/acme/ssl.key;
@@ -154,6 +160,13 @@ server {
     {% endif %}
 
 
+    # Self-hosted basemap for the listener map (see the basemap role)
+    location /static/maps {
+        alias {{ app_base }}/maps;
+        expires 7d;
+        try_files $uri =404;
+    }
+
     location /static/icons {
         expires 365d;
     }
@@ -176,6 +189,9 @@ server {
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         fastcgi_param DOCUMENT_ROOT $realpath_root;
         include fastcgi_params;
+
+        # Pass the resolved host instead of the raw, client-controlled Host header
+        fastcgi_param HTTP_HOST $host$is_request_port$request_port;
 
         fastcgi_read_timeout 1800;
         fastcgi_buffering off;

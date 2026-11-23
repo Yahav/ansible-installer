@@ -12,6 +12,12 @@
         name: env_vars
       ignore_errors: yes
 
+    # The old SFTPGo repository no longer exists and makes every dnf operation fail.
+    - name: Remove the retired SFTPGo yum repository
+      ansible.builtin.file:
+        path: /etc/yum.repos.d/sftpgo.repo
+        state: absent
+
     - name: Running context
       debug:
         msg: >-
@@ -49,6 +55,7 @@
     update_mode: true
     full_update: false
     migrations_dir: "{{ playbook_dir }}/migrations"
+    nginx_http2: "{{ env_vars.NGINX_HTTP2 | default('on') }}"
     azuracast_repo: "{{ env_vars.AZURACAST_REPO | default('AzuraCast/AzuraCast') }}"
     azuracast_ref: "{{ env_vars.AZURACAST_REF | default('heads/') }}"
     azuracast_ver: "{{ env_vars.AZURACAST_VER | default('stable') }}"

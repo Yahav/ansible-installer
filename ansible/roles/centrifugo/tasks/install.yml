@@ -1,0 +1,32 @@
+---
+# Installs a pinned Centrifugo binary. Included by the role and by migrations.
+
+- name: Set Centrifugo version
+  set_fact:
+    centrifugo_version: "6.10.3"
+    centrifugo_arch: "{{ 'arm64' if ansible_architecture == 'aarch64' else 'amd64' }}"
+
+- name: Create Centrifugo download directory
+  file:
+    path: "/tmp/centrifugo-{{ centrifugo_version }}"
+    state: directory
+
+- name: Download Centrifugo {{ centrifugo_version }}
+  unarchive:
+    src: "https://github.com/centrifugal/centrifugo/releases/download/v{{ centrifugo_version }}/centrifugo_{{ centrifugo_version }}_linux_{{ centrifugo_arch }}.tar.gz"
+    dest: "/tmp/centrifugo-{{ centrifugo_version }}"
+    remote_src: true
+
+- name: Install Centrifugo binary
+  copy:
+    src: "/tmp/centrifugo-{{ centrifugo_version }}/centrifugo"
+    dest: /usr/bin/centrifugo
+    remote_src: true
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Remove Centrifugo download directory
+  file:
+    path: "/tmp/centrifugo-{{ centrifugo_version }}"
+    state: absent

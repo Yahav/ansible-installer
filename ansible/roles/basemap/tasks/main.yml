@@ -1,0 +1,74 @@
+---
+# Self-hosted basemap for the listener map (AzuraCast 0.24+).
+# Port of upstream's util/docker/web/setup/basemap.sh. nginx serves the result at /static/maps.
+# Included as a role by deploy.yml and as a task file by migrations.
+
+- name: Set basemap versions
+  set_fact:
+    pmtiles_version: "1.31.2"
+    basemaps_assets_commit: "028c18f713baecad011301ff7a69acc39bcc2ae7"
+    pmtiles_arch: "{{ 'arm64' if ansible_architecture == 'aarch64' else 'x86_64' }}"
+    basemap_dir: "{{ app_base }}/maps"
+    basemap_work_dir: "/tmp/azuracast-basemap"
+
+- name: Create basemap directories
+  file:
+    path: "{{ basemap_path }}"
+    state: directory
+    owner: azuracast
+    group: azuracast
+    mode: "0755"
+  loop:
+    - "{{ basemap_dir }}"
+    - "{{ basemap_dir }}/assets"
+    - "{{ basemap_work_dir }}"
+  loop_control:
+    loop_var: basemap_path
+
+- name: Download pmtiles {{ pmtiles_version }}
+  unarchive:
+    src: "https://github.com/protomaps/go-pmtiles/releases/download/v{{ pmtiles_version }}/go-pmtiles_{{ pmtiles_version }}_Linux_{{ pmtiles_arch }}.tar.gz"
+    dest: "{{ basemap_work_dir }}"
+    remote_src: true
+    include:
+      - pmtiles
+
+# Protomaps publishes one world build per day; yesterday's is always complete.
+- name: Work out the Protomaps build date
+  command: date -u -d "yesterday" +%Y%m%d
+  register: basemap_build_date
+  changed_when: false
+
+- name: Extract the world basemap up to zoom 6 (downloads from build.protomaps.com)
+  shell: >-
+    {{ basemap_work_dir }}/pmtiles extract
+    "https://build.protomaps.com/{{ basemap_build_date.stdout }}.pmtiles"
+    {{ basemap_dir }}/basemap.pmtiles.tmp --maxzoom=6
+    && mv {{ basemap_dir }}/basemap.pmtiles.tmp {{ basemap_dir }}/basemap.pmtiles
+  args:
+    creates: "{{ basemap_dir }}/basemap.pmtiles"
+
+- name: Download map fonts and sprites
+  unarchive:
+    src: "https://github.com/protomaps/basemaps-assets/archive/{{ basemaps_assets_commit }}.tar.gz"
+    dest: "{{ basemap_dir }}/assets"
+    remote_src: true
+    extra_opts:
+      - "--strip-components=1"
+    include:
+      - "basemaps-assets-{{ basemaps_assets_commit }}/fonts"
+      - "basemaps-assets-{{ basemaps_assets_commit }}/sprites"
+    creates: "{{ basemap_dir }}/assets/sprites"
+
+- name: Set basemap ownership
+  file:
+    path: "{{ basemap_dir }}"
+    state: directory
+    owner: azuracast
+    group: azuracast
+    recurse: true
+
+- name: Remove basemap work directory
+  file:
+    path: "{{ basemap_work_dir }}"
+    state: absent

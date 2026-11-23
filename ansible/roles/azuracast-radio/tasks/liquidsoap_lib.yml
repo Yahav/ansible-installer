@@ -1,0 +1,52 @@
+---
+# Shared Liquidsoap library (azuracast.liq and friends) and its directories.
+# Included by liquidsoap.yml and by migrations, so template paths are absolute.
+
+- name: Create liquidsoap directory if it does not exist
+  ansible.builtin.file:
+    path: "{{app_base}}/liquidsoap"
+    state: directory
+    owner: azuracast
+    group: azuracast
+
+- name: Create liquidsoap directory if it does not exist
+  ansible.builtin.file:
+    path: "{{tmp_base}}/liquidsoap_cache"
+    state: directory
+    owner: azuracast
+    group: azuracast
+
+- name: Create liquidsoap directory if it does not exist
+  ansible.builtin.file:
+    path: "/tmp/liquidsoap_cache"
+    state: directory
+    owner: azuracast
+    group: azuracast
+
+- name: Write AzuraCast common liquidsoap config
+  template:
+    src: "{{ playbook_dir }}/roles/azuracast-radio/templates/azuracast.liq.j2"
+    dest: "{{ app_base }}/liquidsoap/azuracast.liq"
+    owner: azuracast
+    group: azuracast
+    mode: 0644
+    force: true
+
+- name: Write AzuraCast common liquidsoap config
+  template:
+    src: "{{ playbook_dir }}/roles/azuracast-radio/templates/crossfade.liq.j2"
+    dest: "{{ app_base }}/liquidsoap/crossfade.liq"
+    owner: azuracast
+    group: azuracast
+    mode: 0644
+    force: true
+
+- name: Write AzuraCast common liquidsoap config
+  template:
+    src: "{{ playbook_dir }}/roles/azuracast-radio/templates/utilities.liq.j2"
+    dest: "{{ app_base }}/liquidsoap/utilities.liq"
+    owner: azuracast
+    group: azuracast
+    mode: 0644
+    force: true
+

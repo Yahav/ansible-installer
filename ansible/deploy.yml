@@ -12,6 +12,12 @@
         file: "{{ playbook_dir | dirname }}/ansible/.env"
         name: env_vars
       ignore_errors: yes
+
+    # The old SFTPGo repository no longer exists and makes every dnf operation fail.
+    - name: Remove the retired SFTPGo yum repository
+      ansible.builtin.file:
+        path: /etc/yum.repos.d/sftpgo.repo
+        state: absent
   
   vars:
     ansible_base: "{{ playbook_dir | dirname }}"
@@ -26,6 +32,7 @@
     update_mode: false
     dev_azuracast_user_password: "azuracast"
     dev_mysql_user_password: "azuracast"
+    nginx_http2: "{{ env_vars.NGINX_HTTP2 | default('on') }}"
     azuracast_repo: "{{ env_vars.AZURACAST_REPO | default('AzuraCast/AzuraCast') }}"
     azuracast_ref: "{{ env_vars.AZURACAST_REF | default('heads/') }}"
     azuracast_ver: "{{ env_vars.AZURACAST_VER | default('stable') }}"
@@ -55,6 +62,8 @@
       tags: centrifugo
     - role: sftpgo
       tags: sftpgo
+    - role: basemap
+      tags: basemap
     - role: mariadb
       tags: mariadb
     - role: ufw
