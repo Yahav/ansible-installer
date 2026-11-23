@@ -59,9 +59,12 @@
     PKG_CONFIG_PATH: "/usr/local/lib64/pkgconfig:/usr/local/lib/pkgconfig:/usr/lib64/pkgconfig:/usr/lib/pkgconfig"
     PATH: "/usr/local/bin:/usr/bin:/bin"
   shell: "{{item}}"
+  # conf-jack is pinned to 1: version 3 names pipewire-jack-audio-connection-kit-devel as the RHEL
+  # system package, which conflicts with the real JACK (jack-audio-connection-kit-devel) that
+  # ffmpeg.yml installs. opam then aborts, because it will not run yum non-interactively.
   with_items:
     - "{{opam.stdout}} init -a"
-    - "{{opam.stdout}} install -y -q magic dune pulseaudio ao ogg srt ssl tsdl-image tsdl-ttf graphics taglib conf-freetype tls-liquidsoap opus taglib lilv mad lame faad speex imagelib theora vorbis gd flac fdkaac cry samplerate soundtouch lo shine conf-ffmpeg ffmpeg.1.2.8 ffmpeg-av.1.2.8  ffmpeg-avcodec.1.2.8 ffmpeg-avdevice.1.2.8 ffmpeg-avfilter.1.2.8 ffmpeg-avutil.1.2.8 bjack portaudio ladspa sqlite3 liquidsoap.2.4.6"
+    - "{{opam.stdout}} install -y -q magic dune pulseaudio ao ogg srt ssl tsdl-image tsdl-ttf graphics taglib conf-freetype tls-liquidsoap opus taglib lilv mad lame faad speex imagelib theora vorbis gd flac fdkaac cry samplerate soundtouch lo shine conf-ffmpeg ffmpeg.1.2.8 ffmpeg-av.1.2.8  ffmpeg-avcodec.1.2.8 ffmpeg-avdevice.1.2.8 ffmpeg-avfilter.1.2.8 ffmpeg-avutil.1.2.8 conf-jack.1 bjack portaudio ladspa sqlite3 liquidsoap.2.4.6"
 
 - shell: eval `{{opam.stdout}} config env` && echo $OPAM_SWITCH_PREFIX
   become: true
