@@ -44,10 +44,18 @@
   changed_when: false
   failed_when: false
 
-# Skipped when 001_liquidsoap_240.yml already rebuilt it in this same run.
-- name: Rebuild Liquidsoap 2.4.6 (this can take quite a while)
+- name: Check for an existing OPAM switch
+  ansible.builtin.stat:
+    path: "{{ app_base }}/.opam/default"
+  register: migration_opam_switch
+
+# With an existing switch the upgrade is done in place, so a failed build leaves the old
+# Liquidsoap working. Without one, everything is built from scratch.
+- name: Upgrade Liquidsoap to 2.4.6 (this can take quite a while)
   ansible.builtin.include_tasks:
     file: "{{ playbook_dir }}/roles/azuracast-radio/tasks/liquidsoap.yml"
+  vars:
+    liquidsoap_upgrade_in_place: "{{ migration_opam_switch.stat.exists }}"
   when: "'Liquidsoap 2.4.6' not in (migration_liquidsoap_version.stdout | default(''))"
 
 # 0.24.1 writes crossfade_smart_* settings into every station config; they are defined here.

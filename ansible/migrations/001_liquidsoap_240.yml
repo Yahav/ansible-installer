@@ -2,9 +2,9 @@
 # Migration: Upgrade Liquidsoap to 2.4.0
 # Date: 2025-02-25
 
-- name: Rebuild Liquidsoap 2.4.0
-  ansible.builtin.include_tasks:
-    file: "{{ playbook_dir }}/roles/azuracast-radio/tasks/liquidsoap.yml"
+# The Liquidsoap rebuild that used to be here is superseded by 002_azuracast_0241.yml. It deleted
+# the whole opam directory first, and servers that never recorded this migration would run it
+# again before 002.
 
 - name: Update AutoCue plugin
   ansible.builtin.include_tasks:
