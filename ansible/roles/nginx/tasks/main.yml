@@ -7,12 +7,20 @@
     state: absent
 
 
-- name: Remove any older nginx
+# Only the distribution's nginx is removed (nginx-core, nginx-filesystem and nginx-mod-* exist only
+# there; removing nginx-core takes its nginx package with it). The installed names are listed first
+# because dnf fails on a "nginx-*" glob once nothing installed matches it.
+- name: List installed distribution nginx packages
+  shell: >-
+    rpm -qa --qf '%{NAME}\n' 'nginx-core' 'nginx-filesystem' 'nginx-all-modules' 'nginx-mod-*'
+  register: nginx_distro_packages
+  changed_when: false
+
+- name: Remove the distribution nginx
   dnf:
-    name:
-      - nginx
-      - nginx-*
+    name: "{{ nginx_distro_packages.stdout_lines }}"
     state: absent
+  when: nginx_distro_packages.stdout_lines | length > 0
 
 # AzuraCast 0.24+ needs nginx mainline ("http2 on;", $is_request_port / $request_port),
 # which the distribution packages are too old for.
