@@ -76,6 +76,19 @@
     value: "{{ app_env }}"
     mode: 0644
 
+# AzuraCast reads {{ www_base }}/azuracast.env. The www directory was cleared above, so the file is
+# put back here; without it the update runs with default settings (and the wrong database password).
+- name: Restore the environment file into the www directory
+  copy:
+    src: "{{ app_base }}/azuracast.env"
+    dest: "{{ www_base }}/azuracast.env"
+    remote_src: true
+    force: false
+    owner: azuracast
+    group: www-data
+    mode: 0644
+  when: app_env == "production"
+
 - name: Set up environment file
   ini_file:
     dest: "{{ app_base }}/azuracast.env"
