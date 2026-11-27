@@ -1,0 +1,56 @@
+---
+# Locks the Raven codec libraries at their installed versions.
+# Included by the role (after the FFmpeg build) and by migrations.
+#
+# Why: FFmpeg is built from source against these libraries, so a new major version of one of
+# them (libSvtAv1Enc.so.1 -> .so.3, libx264.so.164 -> .so.165) breaks FFmpeg until it is rebuilt.
+# The Raven multimedia repository also offers a set of updates that cannot be installed together
+# (compat-ffmpeg6-libs needs the old svt-av1, ffmpeg-libs 9 needs the new one), which makes a
+# plain "dnf update" fail as a whole and blocks every other system update.
+#
+# To move these libraries later: "dnf versionlock delete <name>", update them, and rebuild
+# FFmpeg (ffmpeg.yml) in the same step.
+
+- name: Install the dnf versionlock plugin
+  dnf:
+    name: python3-dnf-plugin-versionlock
+    state: present
+
+- name: Lock the installed codec library versions
+  shell: |
+    set -e
+    for pkg in {{ codec_locked_packages | join(' ') }}; do
+      if rpm -q "$pkg" >/dev/null 2>&1; then
+        dnf versionlock add "$pkg"
+      fi
+    done
+  args:
+    executable: /bin/bash
+  vars:
+    codec_locked_packages:
+      - svt-av1-libs
+      - svt-av1-devel
+      - svt-av1-devel-docs
+      - x264
+      - x264-libs
+      - x264-devel
+      - compat-ffmpeg6-libs
+      - ffmpeg-libs
+      - libavdevice6
+      - gpac-libs
+
+# libavif is not locked: FFmpeg does not use it, and gd3php (PHP's image library) and SDL2_image
+# need a newer one. Raven's libavif 1.3 needs svt-av1 3.x, so only Raven's builds are hidden and
+# dnf takes EPEL's libavif instead.
+- name: Hide the Raven libavif builds so EPEL's is used
+  command: >-
+    dnf config-manager --save
+    --setopt=raven-multimedia.excludepkgs=libavif*,compat-libavif*
+
+- name: Show the locked packages
+  command: dnf versionlock list
+  register: codec_versionlock_list
+  changed_when: false
+
+- debug:
+    var: codec_versionlock_list.stdout_lines

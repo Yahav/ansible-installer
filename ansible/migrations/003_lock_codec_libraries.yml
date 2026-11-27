@@ -1,0 +1,11 @@
+---
+# Migration: lock the Raven codec libraries FFmpeg was built against
+# Date: 2026-11-23
+#
+# Unblocks "dnf update", which fails as a whole on the conflicting svt-av1 / x264 /
+# compat-ffmpeg6-libs / ffmpeg-libs updates in the Raven multimedia repository, and keeps the
+# source-built FFmpeg working. Nothing is installed, removed or upgraded except the plugin.
+
+- name: Lock the codec libraries
+  ansible.builtin.include_tasks:
+    file: "{{ playbook_dir }}/roles/azuracast-radio/tasks/codec_versionlock.yml"

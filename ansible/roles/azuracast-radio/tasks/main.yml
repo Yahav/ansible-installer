@@ -7,6 +7,9 @@
   include_tasks: ffmpeg.yml
   tags: ffmpeg
 
+- name: Lock the codec libraries FFmpeg was built against
+  include_tasks: codec_versionlock.yml
+
 - name: Install Liquidsoap
   include_tasks: liquidsoap.yml
 

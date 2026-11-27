@@ -123,7 +123,8 @@
       - libssh-devel
 
       # Video encoders / decoders (enable when available)
-      - x264
+      # Only the x264 library is needed. The "x264" command-line tool is left out on purpose:
+      # it pulls in ffmpeg-libs and compat-ffmpeg6-libs, which block "dnf update".
       - x264-devel
       - x265
       - x265-devel
