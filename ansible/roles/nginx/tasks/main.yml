@@ -45,7 +45,7 @@
 
 - name: Add nginx global config
   template:
-    src: nginx.conf.j2
+    src: "{{ playbook_dir }}/roles/nginx/templates/nginx.conf.j2"
     dest: /etc/nginx/nginx.conf
     force: true
     backup: true
@@ -53,14 +53,14 @@
 
 - name: Add app-specific nginx site
   template:
-    src: default.j2
+    src: "{{ playbook_dir }}/roles/nginx/templates/default.j2"
     dest: /etc/nginx/conf.d/00-azuracast.conf
     force: true
     mode: 0644
 
 - name: Copy proxy_params.conf
   template:
-    src: proxy_params.conf.j2
+    src: "{{ playbook_dir }}/roles/nginx/templates/proxy_params.conf.j2"
     dest: /etc/nginx/proxy_params
     force: true
     mode: 0644
@@ -112,17 +112,31 @@
     owner: azuracast
     group: azuracast
     
+# Only when no certificate is linked yet: on an existing server ssl.key / ssl.crt point at the
+# real (ACME or custom) certificate, and relinking would swap it for the self-signed one.
+- name: Check for an existing SSL key link
+  stat:
+    path: "{{ app_base }}/storage/acme/ssl.key"
+  register: nginx_ssl_key_link
+
+- name: Check for an existing SSL cert link
+  stat:
+    path: "{{ app_base }}/storage/acme/ssl.crt"
+  register: nginx_ssl_crt_link
+
 - name: Link self-signed SSL key if applicable.
   file:
     path: "{{ app_base }}/storage/acme/ssl.key"
     state: link
     src: "{{ app_base }}/storage/acme/default.key"
+  when: not nginx_ssl_key_link.stat.exists
 
 - name: Link self-signed SSL cert if applicable.
   file:
     path: "{{ app_base }}/storage/acme/ssl.crt"
     state: link
     src: "{{ app_base }}/storage/acme/default.crt"
+  when: not nginx_ssl_crt_link.stat.exists
 
 - name: Ensure nginx tmp directories exist at boot
   copy:
@@ -146,7 +160,7 @@
 
 - name: Install Nginx Supervisord conf
   template:
-    src: supervisor.conf.j2
+    src: "{{ playbook_dir }}/roles/nginx/templates/supervisor.conf.j2"
     dest: /etc/supervisord.d/nginx.conf
     force: true
     mode: 0644
